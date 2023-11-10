@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en-US" data-theme="light">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Injured android - Ephesus - Minimalist Jekyll Theme</title>
+		<meta name="description" content="Ephesus - Minimalist Jekyll Theme">
+		<meta name="keywords" content="">
+		<base href="http://localhost:4000" />
+		
+    	<meta content="2023-11-10T00:00:00-05:00" property="article:published_time">
+    	<meta content="http://localhost:4000/about/" property="article:author">
+  		
+		<meta property="og:site_name" content="Ephesus - Minimalist Jekyll Theme">
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="http://localhost:4000/injured-android"/>
+		<meta property="og:title" content="Injured android - Ephesus - Minimalist Jekyll Theme" />
+		<meta property="og:description" content="Ephesus - Minimalist Jekyll Theme" />
+		<meta property="og:image" content="http://localhost:4000/assets/images/favicon.png"/>
+		<meta name="twitter:card" content="summary"/>
+		<meta property="twitter:title" content="Injured android - Ephesus - Minimalist Jekyll Theme" />
+		<meta property="twitter:description" content="Ephesus - Minimalist Jekyll Theme" />
+		<meta property="twitter:image" content="http://localhost:4000/assets/images/favicon.png" />
+		<link rel="stylesheet" href="assets/css/highlight.css">
+		<link rel="stylesheet" href="assets/css/style.css">
+		<link rel="shortcut icon" href="assets/images/favicon.png" />
+		<link rel="alternate" type="application/atom+xml" title="Ephesus - Minimalist Jekyll Theme" href="http://localhost:4000/atom.xml">
+		<link rel="alternate" type="application/json" title="Ephesus - Minimalist Jekyll Theme" href="http://localhost:4000/feed.json" />
+		<link rel="sitemap" type="application/xml" title="sitemap" href="http://localhost:4000/sitemap.xml" />
+		<meta name="google-site-verification" content="XXX" />
+	</head>
+<body>
+<div class="container">
+	<div class="profile">
+		<a href="http://localhost:4000"><img src="assets/images/profile.jpg" class="profile-image"></a>
+		<div class="profile-about">
+			<h2 style="margin-bottom: 0; font-weight: 700;">Zachary Reed</h2>
+			
+			
+			
+			
+			
+				<a href="https://github.com/BUG5Y" target="_blank"><img src="assets/images/icon/github.svg" class="social-icon"></a>
+			
+			
+				<a href="https://linkedin.com/in/hakantorun" target="_blank"><img src="assets/images/icon/linkedin.svg" class="social-icon"></a>
+			
+			<a href="about"><img src="assets/images/icon/me.svg" class="social-icon"></a>
+			<br>
+			Fill <br> Fill <br> OSCP ~ eJPT ~ Security+ /#linux
+			<br>
+			<div class="mode" id="mode-switcher" onclick="toggleNightMode();">
+				<span></span>
+			</div>
+		</div>
+	</div>
+	
+<div class="post-header">
+	<div class="post-date">10.11.2023</div>
+	<div class="post-share">
+		Share:&nbsp; 
+		<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Injured Android" target="_blank"><img src="assets/images/icon/facebook.svg" class="social-icon"></a>
+		<a href="https://twitter.com/intent/tweet?source=tweetbutton&amp;original_referer=http://localhost:4000/Injured Android&amp;text=Injured android - http://localhost:4000/Injured Android" target="_blank"><img src="assets/images/icon/twitter.svg" class="social-icon"></a>
+		<a href="https://api.whatsapp.com/send?text=http://localhost:4000/Injured Android" target="_blank"><img src="assets/images/icon/whatsapp.svg" class="social-icon"></a>
+	</div>
+</div>
+
+<div class="blog-post-content">
+	<h1>Injured android</h1>
+	<p>This is a write-up of a few of the flags from the intentionally vulnerable Android app <a href="https://github.com/B3nac/InjuredAndroid">Injured Android</a>.</p>
+
+<p>I found that this was a great way to get hands-on experience with testing an Android app with fewer unknowns compared to some other CTF apps.</p>
+
+<h1 id="initial-setup">Initial Setup</h1>
+
+<p>Getting started I de-compiled the APK and went ahead and installed the app on our emulator.</p>
+
+<p>De-compile the APK: <code class="language-plaintext highlighter-rouge">./jadx /InjuredAndroid/InjuredAndroid-1.0.12-release.apk -d /Decomp-InjuredAndroid --show-bad-code</code></p>
+
+<p>Install the app: <code class="language-plaintext highlighter-rouge">adb install /InjuredAndroid/InjuredAndroid-1.0.12-release.apk</code></p>
+
+<h1 id="flag-zero-xss-test">Flag Zero: XSS Test</h1>
+
+<p>There is no actual flag for this one just for testing XSS. <code class="language-plaintext highlighter-rouge">XSSTextActivity</code> supplies our user input to <code class="language-plaintext highlighter-rouge">DisplayPostXSS</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">package</span> <span class="nx">b3nac</span><span class="p">.</span><span class="nx">injuredandroid</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">content</span><span class="p">.</span><span class="nx">Intent</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">os</span><span class="p">.</span><span class="nx">Bundle</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">View</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">EditText</span><span class="p">;</span>
+
+<span class="cm">/* loaded from: classes.dex */</span>
+<span class="kr">public</span> <span class="kd">class</span> <span class="nc">XSSTextActivity</span> <span class="kd">extends</span> <span class="nc">androidx</span><span class="p">.</span><span class="nx">appcompat</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">c</span> <span class="p">{</span>
+    <span class="cm">/* JADX INFO: Access modifiers changed from: protected */</span>
+    <span class="p">@</span><span class="nd">Override</span> <span class="c1">// androidx.appcompat.app.c, androidx.fragment.app.d, androidx.activity.ComponentActivity, androidx.core.app.e, android.app.Activity</span>
+    <span class="kr">public</span> <span class="k">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="nx">Bundle</span> <span class="nx">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="nx">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">activity_xsstext</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kr">public</span> <span class="k">void</span> <span class="nf">submitText</span><span class="p">(</span><span class="nx">View</span> <span class="nx">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">Intent</span> <span class="nx">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Intent</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">DisplayPostXSS</span><span class="p">.</span><span class="kd">class</span><span class="p">);</span>
+        <span class="nx">intent</span><span class="p">.</span><span class="nf">putExtra</span><span class="p">(</span><span class="dl">"</span><span class="s2">com.b3nac.injuredandroid.DisplayPostXSS</span><span class="dl">"</span><span class="p">,</span> <span class="p">((</span><span class="nx">EditText</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">editText</span><span class="p">)).</span><span class="nf">getText</span><span class="p">().</span><span class="nf">toString</span><span class="p">());</span>
+        <span class="nf">startActivity</span><span class="p">(</span><span class="nx">intent</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">DisplayPostXSS</code> then puts our string into a WebView instance that has JavaScript enabled without any prior sanitation.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">package</span> <span class="nx">b3nac</span><span class="p">.</span><span class="nx">injuredandroid</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">os</span><span class="p">.</span><span class="nx">Bundle</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">webkit</span><span class="p">.</span><span class="nx">WebChromeClient</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">webkit</span><span class="p">.</span><span class="nx">WebSettings</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">webkit</span><span class="p">.</span><span class="nx">WebView</span><span class="p">;</span>
+
+<span class="cm">/* loaded from: classes.dex */</span>
+<span class="kr">public</span> <span class="nx">final</span> <span class="kd">class</span> <span class="nc">DisplayPostXSS</span> <span class="kd">extends</span> <span class="nc">androidx</span><span class="p">.</span><span class="nx">appcompat</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">c</span> <span class="p">{</span>
+    <span class="cm">/* JADX INFO: Access modifiers changed from: protected */</span>
+    <span class="p">@</span><span class="nd">Override</span> <span class="c1">// androidx.appcompat.app.c, androidx.fragment.app.d, androidx.activity.ComponentActivity, androidx.core.app.e, android.app.Activity</span>
+    <span class="kr">public</span> <span class="k">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="nx">Bundle</span> <span class="nx">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="nx">bundle</span><span class="p">);</span>
+        <span class="nx">WebView</span> <span class="nx">webView</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WebView</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="nx">webView</span><span class="p">);</span>
+        <span class="nb">String</span> <span class="nx">stringExtra</span> <span class="o">=</span> <span class="nf">getIntent</span><span class="p">().</span><span class="nf">getStringExtra</span><span class="p">(</span><span class="dl">"</span><span class="s2">com.b3nac.injuredandroid.DisplayPostXSS</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">WebSettings</span> <span class="nx">settings</span> <span class="o">=</span> <span class="nx">webView</span><span class="p">.</span><span class="nf">getSettings</span><span class="p">();</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">settings</span><span class="p">,</span> <span class="dl">"</span><span class="s2">vulnWebView.settings</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">settings</span><span class="p">.</span><span class="nf">setJavaScriptEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="nx">webView</span><span class="p">.</span><span class="nf">setWebChromeClient</span><span class="p">(</span><span class="k">new</span> <span class="nc">WebChromeClient</span><span class="p">());</span>
+        <span class="nx">webView</span><span class="p">.</span><span class="nf">loadData</span><span class="p">(</span><span class="nx">stringExtra</span><span class="p">,</span> <span class="dl">"</span><span class="s2">text/html</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">UTF-8</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;h1&gt;XSS &lt;script&gt;alert(1)&lt;/script&gt;!&lt;/h1&gt;</code></p>
+
+<p><img src="Injured%20Android%20ddd06fb207354b8abf489a6da38e5875/xss2.png" alt="xss2.png" /></p>
+
+<h1 id="flag-one-login">Flag One: Login</h1>
+
+<p>For the first real flag, we can view the conveniently named class <code class="language-plaintext highlighter-rouge">FlagOneLoginActivity</code> from the de-compiled APK.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">public</span> <span class="n">final</span> <span class="k">class</span> <span class="nc">FlagOneLoginActivity</span> <span class="n">extends</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="nb">int</span> <span class="n">w</span><span class="p">;</span>
+
+    <span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+    <span class="n">static</span> <span class="n">final</span> <span class="k">class</span> <span class="nc">a</span> <span class="n">implements</span> <span class="n">View</span><span class="p">.</span><span class="n">OnClickListener</span> <span class="p">{</span>
+        <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="nd">@Override</span> <span class="o">//</span> <span class="n">android</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">View</span><span class="p">.</span><span class="n">OnClickListener</span>
+        <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nf">onClick</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nf">if </span><span class="p">(</span><span class="n">FlagOneLoginActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Snackbar</span> <span class="n">X</span> <span class="o">=</span> <span class="n">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="sh">"</span><span class="s">The flag is right under your nose.</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="n">X</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="sh">"</span><span class="s">Action</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+                <span class="n">X</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+                <span class="n">FlagOneLoginActivity</span> <span class="n">flagOneLoginActivity</span> <span class="o">=</span> <span class="n">FlagOneLoginActivity</span><span class="p">.</span><span class="n">this</span><span class="p">;</span>
+                <span class="n">flagOneLoginActivity</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="n">flagOneLoginActivity</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="nf">if </span><span class="p">(</span><span class="n">FlagOneLoginActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Snackbar</span> <span class="n">X2</span> <span class="o">=</span> <span class="n">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="sh">"</span><span class="s">The flag is also under the GUI.</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="n">X2</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="sh">"</span><span class="s">Action</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+                <span class="n">X2</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+                <span class="n">FlagOneLoginActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="nb">int</span> <span class="nc">F</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">this</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nc">G</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">/*</span> <span class="n">JADX</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">Access</span> <span class="n">modifiers</span> <span class="n">changed</span> <span class="k">from</span><span class="p">:</span> <span class="n">protected</span> <span class="o">*/</span>
+    <span class="nd">@Override</span> <span class="o">//</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">fragment</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">activity</span><span class="p">.</span><span class="n">ComponentActivity</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">e</span><span class="p">,</span> <span class="n">android</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">Activity</span>
+    <span class="n">public</span> <span class="n">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span> <span class="n">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="n">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_flag_one_login</span><span class="p">);</span>
+        <span class="n">j</span><span class="p">.</span><span class="n">j</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>
+        <span class="nc">C</span><span class="p">((</span><span class="n">Toolbar</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">toolbar</span><span class="p">));</span>
+        <span class="p">((</span><span class="n">FloatingActionButton</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">fab</span><span class="p">)).</span><span class="nf">setOnClickListener</span><span class="p">(</span><span class="n">new</span> <span class="nf">a</span><span class="p">());</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nf">submitFlag</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">EditText</span> <span class="n">editText</span> <span class="o">=</span> <span class="p">(</span><span class="n">EditText</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">editText2</span><span class="p">);</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">editText</span><span class="p">,</span> <span class="sh">"</span><span class="s">editText2</span><span class="sh">"</span><span class="p">);</span>
+        <span class="nf">if </span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="n">editText</span><span class="p">.</span><span class="nf">getText</span><span class="p">().</span><span class="nf">toString</span><span class="p">(),</span> <span class="sh">"</span><span class="s">F1ag_0n3</span><span class="sh">"</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="n">new</span> <span class="nc">Intent</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">FlagOneSuccess</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+            <span class="n">new</span> <span class="nc">FlagsOverview</span><span class="p">().</span><span class="nc">J</span><span class="p">(</span><span class="n">true</span><span class="p">);</span>
+            <span class="n">new</span> <span class="nf">j</span><span class="p">().</span><span class="nf">b</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="sh">"</span><span class="s">flagOneButtonColor</span><span class="sh">"</span><span class="p">,</span> <span class="n">true</span><span class="p">);</span>
+            <span class="nf">startActivity</span><span class="p">(</span><span class="n">intent</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Reviewing the code we find <code class="language-plaintext highlighter-rouge">submitFlag()</code> which compares our user-supplied string to a hard-coded string <code class="language-plaintext highlighter-rouge">F1ag_0n3</code>. If our string matches the hard-coded string then a new intent <code class="language-plaintext highlighter-rouge">FlagOneSuccess</code> will be triggered</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kr">public</span> <span class="nx">final</span> <span class="k">void</span> <span class="nf">submitFlag</span><span class="p">(</span><span class="nx">View</span> <span class="nx">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">EditText</span> <span class="nx">editText</span> <span class="o">=</span> <span class="p">(</span><span class="nx">EditText</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">editText2</span><span class="p">);</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">editText</span><span class="p">,</span> <span class="dl">"</span><span class="s2">editText2</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="nx">editText</span><span class="p">.</span><span class="nf">getText</span><span class="p">().</span><span class="nf">toString</span><span class="p">(),</span> <span class="dl">"</span><span class="s2">F1ag_0n3</span><span class="dl">"</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">Intent</span> <span class="nx">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Intent</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">FlagOneSuccess</span><span class="p">.</span><span class="kd">class</span><span class="p">);</span>
+            <span class="k">new</span> <span class="nc">FlagsOverview</span><span class="p">().</span><span class="nc">J</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+            <span class="k">new</span> <span class="nf">j</span><span class="p">().</span><span class="nf">b</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">"</span><span class="s2">flagOneButtonColor</span><span class="dl">"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+            <span class="nf">startActivity</span><span class="p">(</span><span class="nx">intent</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<h1 id="flag-two-exported-activities">Flag Two: Exported Activities</h1>
+
+<p>Looking into <code class="language-plaintext highlighter-rouge">FlagTwoActivity</code> we see the hints that we need to use an exported activity.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">package</span> <span class="nx">b3nac</span><span class="p">.</span><span class="nx">injuredandroid</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">os</span><span class="p">.</span><span class="nx">Bundle</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">View</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">androidx</span><span class="p">.</span><span class="nx">appcompat</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">Toolbar</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">android</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">floatingactionbutton</span><span class="p">.</span><span class="nx">FloatingActionButton</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">android</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">snackbar</span><span class="p">.</span><span class="nx">Snackbar</span><span class="p">;</span>
+
+<span class="cm">/* loaded from: classes.dex */</span>
+<span class="kr">public</span> <span class="kd">class</span> <span class="nc">FlagTwoActivity</span> <span class="kd">extends</span> <span class="nc">androidx</span><span class="p">.</span><span class="nx">appcompat</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">c</span> <span class="p">{</span>
+    <span class="nx">int</span> <span class="nx">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="kr">public</span> <span class="cm">/* synthetic */</span> <span class="k">void</span> <span class="nc">F</span><span class="p">(</span><span class="nx">View</span> <span class="nx">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">int</span> <span class="nx">i</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">w</span><span class="p">;</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">Snackbar</span> <span class="nx">X</span> <span class="o">=</span> <span class="nx">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="nx">view</span><span class="p">,</span> <span class="dl">"</span><span class="s2">Key words Activity and exported.</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="nx">X</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="dl">"</span><span class="s2">Action</span><span class="dl">"</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+            <span class="nx">X</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">w</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">Snackbar</span> <span class="nx">X2</span> <span class="o">=</span> <span class="nx">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="nx">view</span><span class="p">,</span> <span class="dl">"</span><span class="s2">Exported Activities can be accessed with adb or Drozer.</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="nx">X2</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="dl">"</span><span class="s2">Action</span><span class="dl">"</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+            <span class="nx">X2</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* JADX INFO: Access modifiers changed from: protected */</span>
+    <span class="p">@</span><span class="nd">Override</span> <span class="c1">// androidx.appcompat.app.c, androidx.fragment.app.d, androidx.activity.ComponentActivity, androidx.core.app.e, android.app.Activity</span>
+    <span class="kr">public</span> <span class="k">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="nx">Bundle</span> <span class="nx">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="nx">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">activity_flag_two</span><span class="p">);</span>
+        <span class="nc">C</span><span class="p">((</span><span class="nx">Toolbar</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">));</span>
+        <span class="p">((</span><span class="nx">FloatingActionButton</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">fab</span><span class="p">)).</span><span class="nf">setOnClickListener</span><span class="p">(</span><span class="k">new</span> <span class="nx">View</span><span class="p">.</span><span class="nc">OnClickListener</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// from class: b3nac.injuredandroid.d</span>
+            <span class="p">@</span><span class="nd">Override</span> <span class="c1">// android.view.View.OnClickListener</span>
+            <span class="kr">public</span> <span class="nx">final</span> <span class="k">void</span> <span class="nf">onClick</span><span class="p">(</span><span class="nx">View</span> <span class="nx">view</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">FlagTwoActivity</span><span class="p">.</span><span class="k">this</span><span class="p">.</span><span class="nc">F</span><span class="p">(</span><span class="nx">view</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Reviewing the manifest we can find a few exported activities, however, the one we want is <code class="language-plaintext highlighter-rouge">b25lActivity</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">&lt;</span><span class="nt">activity</span> <span class="na">android</span><span class="err">:</span><span class="na">name</span><span class="p">=</span><span class="s">".b25lActivity"</span> <span class="na">android</span><span class="err">:</span><span class="na">exported</span><span class="p">=</span><span class="s">"true"</span> <span class="p">/&gt;</span>
+</code></pre></div></div>
+
+<p>Once we open <code class="language-plaintext highlighter-rouge">b25lActivity</code> we will see that using this activity will trigger the flag for this flag activity.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">package</span> <span class="nx">b3nac</span><span class="p">.</span><span class="nx">injuredandroid</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">os</span><span class="p">.</span><span class="nx">Bundle</span><span class="p">;</span>
+
+<span class="cm">/* loaded from: classes.dex */</span>
+<span class="kr">public</span> <span class="nx">final</span> <span class="kd">class</span> <span class="nc">b25lActivity</span> <span class="kd">extends</span> <span class="nc">androidx</span><span class="p">.</span><span class="nx">appcompat</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">c</span> <span class="p">{</span>
+    <span class="cm">/* JADX INFO: Access modifiers changed from: protected */</span>
+    <span class="p">@</span><span class="nd">Override</span> <span class="c1">// androidx.appcompat.app.c, androidx.fragment.app.d, androidx.activity.ComponentActivity, androidx.core.app.e, android.app.Activity</span>
+    <span class="kr">public</span> <span class="k">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="nx">Bundle</span> <span class="nx">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="nx">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">activity_b25l</span><span class="p">);</span>
+        <span class="nx">j</span><span class="p">.</span><span class="nx">j</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="k">new</span> <span class="nc">FlagsOverview</span><span class="p">().</span><span class="nc">M</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="k">new</span> <span class="nf">j</span><span class="p">().</span><span class="nf">b</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">"</span><span class="s2">flagTwoButtonColor</span><span class="dl">"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>To call the activity: <code class="language-plaintext highlighter-rouge">adb shell am start -n b3nac.injuredandroid/b3nac.injuredandroid.b25lActivity</code></p>
+
+<p><img src="Injured%20Android%20ddd06fb207354b8abf489a6da38e5875/flag2.png" alt="flag2.png" /></p>
+
+<h1 id="flag-three-resources">Flag Three: Resources</h1>
+
+<p>Now onto <code class="language-plaintext highlighter-rouge">FlagThreeActivity</code> we can see that within <code class="language-plaintext highlighter-rouge">submitFlag()</code> our user-supplied string is being compared to a string that is being retrieved using <code class="language-plaintext highlighter-rouge">getString()</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">package</span> <span class="n">b3nac</span><span class="p">.</span><span class="n">injuredandroid</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="n">android.content.Intent</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.os.Bundle</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.view.View</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.widget.EditText</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">androidx.appcompat.widget.Toolbar</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">com.google.android.material.floatingactionbutton.FloatingActionButton</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">com.google.android.material.snackbar.Snackbar</span><span class="p">;</span>
+
+<span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+<span class="n">public</span> <span class="n">final</span> <span class="k">class</span> <span class="nc">FlagThreeActivity</span> <span class="n">extends</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="nb">int</span> <span class="n">w</span><span class="p">;</span>
+
+    <span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+    <span class="n">static</span> <span class="n">final</span> <span class="k">class</span> <span class="nc">a</span> <span class="n">implements</span> <span class="n">View</span><span class="p">.</span><span class="n">OnClickListener</span> <span class="p">{</span>
+        <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="nd">@Override</span> <span class="o">//</span> <span class="n">android</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">View</span><span class="p">.</span><span class="n">OnClickListener</span>
+        <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nf">onClick</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nf">if </span><span class="p">(</span><span class="n">FlagThreeActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Snackbar</span> <span class="n">X</span> <span class="o">=</span> <span class="n">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="sh">"</span><span class="s">R stands for resources.</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="n">X</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="sh">"</span><span class="s">Action</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+                <span class="n">X</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+                <span class="n">FlagThreeActivity</span> <span class="n">flagThreeActivity</span> <span class="o">=</span> <span class="n">FlagThreeActivity</span><span class="p">.</span><span class="n">this</span><span class="p">;</span>
+                <span class="n">flagThreeActivity</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="n">flagThreeActivity</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="nf">if </span><span class="p">(</span><span class="n">FlagThreeActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Snackbar</span> <span class="n">X2</span> <span class="o">=</span> <span class="n">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="sh">"</span><span class="s">Check .xml files.</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="n">X2</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="sh">"</span><span class="s">Action</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+                <span class="n">X2</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+                <span class="n">FlagThreeActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="nb">int</span> <span class="nc">F</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">this</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nc">G</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">/*</span> <span class="n">JADX</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">Access</span> <span class="n">modifiers</span> <span class="n">changed</span> <span class="k">from</span><span class="p">:</span> <span class="n">protected</span> <span class="o">*/</span>
+    <span class="nd">@Override</span> <span class="o">//</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">fragment</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">activity</span><span class="p">.</span><span class="n">ComponentActivity</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">e</span><span class="p">,</span> <span class="n">android</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">Activity</span>
+    <span class="n">public</span> <span class="n">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span> <span class="n">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="n">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_flag_three</span><span class="p">);</span>
+        <span class="n">j</span><span class="p">.</span><span class="n">j</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>
+        <span class="nc">C</span><span class="p">((</span><span class="n">Toolbar</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">toolbar</span><span class="p">));</span>
+        <span class="p">((</span><span class="n">FloatingActionButton</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">fab</span><span class="p">)).</span><span class="nf">setOnClickListener</span><span class="p">(</span><span class="n">new</span> <span class="nf">a</span><span class="p">());</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nf">submitFlag</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">EditText</span> <span class="n">editText</span> <span class="o">=</span> <span class="p">(</span><span class="n">EditText</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">editText2</span><span class="p">);</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">editText</span><span class="p">,</span> <span class="sh">"</span><span class="s">editText2</span><span class="sh">"</span><span class="p">);</span>
+        <span class="nf">if </span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="n">editText</span><span class="p">.</span><span class="nf">getText</span><span class="p">().</span><span class="nf">toString</span><span class="p">(),</span> <span class="nf">getString</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">string</span><span class="p">.</span><span class="n">cmVzb3VyY2VzX3lv</span><span class="p">)))</span> <span class="p">{</span>
+            <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="n">new</span> <span class="nc">Intent</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">FlagOneSuccess</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+            <span class="n">new</span> <span class="nc">FlagsOverview</span><span class="p">().</span><span class="nc">L</span><span class="p">(</span><span class="n">true</span><span class="p">);</span>
+            <span class="n">new</span> <span class="nf">j</span><span class="p">().</span><span class="nf">b</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="sh">"</span><span class="s">flagThreeButtonColor</span><span class="sh">"</span><span class="p">,</span> <span class="n">true</span><span class="p">);</span>
+            <span class="nf">startActivity</span><span class="p">(</span><span class="n">intent</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Following the Androids documentation <code class="language-plaintext highlighter-rouge">getString()</code> is retrieving the string with the name of <code class="language-plaintext highlighter-rouge">cmVzb3VyY2VzX3lv</code> from <code class="language-plaintext highlighter-rouge">res/values/*filename*.xml</code>. Opening res/values we can locate <code class="language-plaintext highlighter-rouge">strings.xml</code>. A quick search for the string name and we find our flag.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">cmVzb3VyY2VzX3lv</span><span class="sh">"</span><span class="o">&gt;</span><span class="n">F1ag_thr33</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<h1 id="flag-four-login-2">Flag Four: Login 2</h1>
+
+<p><code class="language-plaintext highlighter-rouge">FlagFourActivity</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">package</span> <span class="n">b3nac</span><span class="p">.</span><span class="n">injuredandroid</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="n">android.content.Intent</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.os.Bundle</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.view.View</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.widget.EditText</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">com.google.android.material.floatingactionbutton.FloatingActionButton</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">com.google.android.material.snackbar.Snackbar</span><span class="p">;</span>
+
+<span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+<span class="n">public</span> <span class="n">final</span> <span class="k">class</span> <span class="nc">FlagFourActivity</span> <span class="n">extends</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="nb">int</span> <span class="n">w</span><span class="p">;</span>
+
+    <span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+    <span class="n">static</span> <span class="n">final</span> <span class="k">class</span> <span class="nc">a</span> <span class="n">implements</span> <span class="n">View</span><span class="p">.</span><span class="n">OnClickListener</span> <span class="p">{</span>
+        <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="nd">@Override</span> <span class="o">//</span> <span class="n">android</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">View</span><span class="p">.</span><span class="n">OnClickListener</span>
+        <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nf">onClick</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nf">if </span><span class="p">(</span><span class="n">FlagFourActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Snackbar</span> <span class="n">X</span> <span class="o">=</span> <span class="n">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="sh">"</span><span class="s">Where is bob.</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="n">X</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="sh">"</span><span class="s">Action</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+                <span class="n">X</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+                <span class="n">FlagFourActivity</span> <span class="n">flagFourActivity</span> <span class="o">=</span> <span class="n">FlagFourActivity</span><span class="p">.</span><span class="n">this</span><span class="p">;</span>
+                <span class="n">flagFourActivity</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="n">flagFourActivity</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="nf">if </span><span class="p">(</span><span class="n">FlagFourActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Snackbar</span> <span class="n">X2</span> <span class="o">=</span> <span class="n">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="sh">"</span><span class="s">Classes and imports.</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="n">X2</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="sh">"</span><span class="s">Action</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+                <span class="n">X2</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+                <span class="n">FlagFourActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="nb">int</span> <span class="nc">F</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">this</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nc">G</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">/*</span> <span class="n">JADX</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">Access</span> <span class="n">modifiers</span> <span class="n">changed</span> <span class="k">from</span><span class="p">:</span> <span class="n">protected</span> <span class="o">*/</span>
+    <span class="nd">@Override</span> <span class="o">//</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">fragment</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">activity</span><span class="p">.</span><span class="n">ComponentActivity</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">e</span><span class="p">,</span> <span class="n">android</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">Activity</span>
+    <span class="n">public</span> <span class="n">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span> <span class="n">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="n">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_flag_four</span><span class="p">);</span>
+        <span class="n">j</span><span class="p">.</span><span class="n">j</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>
+        <span class="p">((</span><span class="n">FloatingActionButton</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">fab</span><span class="p">)).</span><span class="nf">setOnClickListener</span><span class="p">(</span><span class="n">new</span> <span class="nf">a</span><span class="p">());</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nf">submitFlag</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">EditText</span> <span class="n">editText</span> <span class="o">=</span> <span class="p">(</span><span class="n">EditText</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">editText2</span><span class="p">);</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">editText</span><span class="p">,</span> <span class="sh">"</span><span class="s">editText2</span><span class="sh">"</span><span class="p">);</span>
+        <span class="n">String</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">editText</span><span class="p">.</span><span class="nf">getText</span><span class="p">().</span><span class="nf">toString</span><span class="p">();</span>
+        <span class="n">byte</span><span class="p">[]</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">new</span> <span class="nf">g</span><span class="p">().</span><span class="nf">a</span><span class="p">();</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="sh">"</span><span class="s">decoder.getData()</span><span class="sh">"</span><span class="p">);</span>
+        <span class="nf">if </span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">new</span> <span class="nc">String</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">d</span><span class="p">.</span><span class="n">w</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="n">f2418a</span><span class="p">)))</span> <span class="p">{</span>
+            <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="n">new</span> <span class="nc">Intent</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">FlagOneSuccess</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+            <span class="n">new</span> <span class="nc">FlagsOverview</span><span class="p">().</span><span class="nc">I</span><span class="p">(</span><span class="n">true</span><span class="p">);</span>
+            <span class="n">new</span> <span class="nf">j</span><span class="p">().</span><span class="nf">b</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="sh">"</span><span class="s">flagFourButtonColor</span><span class="sh">"</span><span class="p">,</span> <span class="n">true</span><span class="p">);</span>
+            <span class="nf">startActivity</span><span class="p">(</span><span class="n">intent</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Once again in <code class="language-plaintext highlighter-rouge">submitFlag()</code> we can see that our user-supplied string is being compared to another string. This time it is being compared to <code class="language-plaintext highlighter-rouge">String(a2, d.w.c.f2418a)</code>. We can also see that <code class="language-plaintext highlighter-rouge">a2</code> is equal to <code class="language-plaintext highlighter-rouge">g().a()</code>. Let’s start with <code class="language-plaintext highlighter-rouge">d.w.c.f2418a</code>.</p>
+
+<p>Opening up <code class="language-plaintext highlighter-rouge">d.w.c</code> we can find <code class="language-plaintext highlighter-rouge">f2418a</code> but really nothing else useful to us.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">package</span> <span class="n">d</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="n">java.nio.charset.Charset</span><span class="p">;</span>
+
+<span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+<span class="n">public</span> <span class="n">final</span> <span class="k">class</span> <span class="nc">c</span> <span class="p">{</span>
+
+    <span class="o">/*</span> <span class="n">renamed</span> <span class="k">from</span><span class="p">:</span> <span class="n">a</span>  <span class="n">reason</span><span class="p">:</span> <span class="n">collision</span> <span class="k">with</span> <span class="n">root</span> <span class="n">package</span> <span class="n">name</span> <span class="o">*/</span>
+    <span class="n">public</span> <span class="n">static</span> <span class="n">final</span> <span class="n">Charset</span> <span class="n">f2418a</span><span class="p">;</span>
+
+    <span class="n">static</span> <span class="p">{</span>
+        <span class="n">Charset</span> <span class="n">forName</span> <span class="o">=</span> <span class="n">Charset</span><span class="p">.</span><span class="nf">forName</span><span class="p">(</span><span class="sh">"</span><span class="s">UTF-8</span><span class="sh">"</span><span class="p">);</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">forName</span><span class="p">,</span> <span class="sh">"</span><span class="s">Charset.forName(</span><span class="se">\"</span><span class="s">UTF-8</span><span class="se">\"</span><span class="s">)</span><span class="sh">"</span><span class="p">);</span>
+        <span class="n">f2418a</span> <span class="o">=</span> <span class="n">forName</span><span class="p">;</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">Charset</span><span class="p">.</span><span class="nf">forName</span><span class="p">(</span><span class="sh">"</span><span class="s">UTF-16</span><span class="sh">"</span><span class="p">),</span> <span class="sh">"</span><span class="s">Charset.forName(</span><span class="se">\"</span><span class="s">UTF-16</span><span class="se">\"</span><span class="s">)</span><span class="sh">"</span><span class="p">);</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">Charset</span><span class="p">.</span><span class="nf">forName</span><span class="p">(</span><span class="sh">"</span><span class="s">UTF-16BE</span><span class="sh">"</span><span class="p">),</span> <span class="sh">"</span><span class="s">Charset.forName(</span><span class="se">\"</span><span class="s">UTF-16BE</span><span class="se">\"</span><span class="s">)</span><span class="sh">"</span><span class="p">);</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">Charset</span><span class="p">.</span><span class="nf">forName</span><span class="p">(</span><span class="sh">"</span><span class="s">UTF-16LE</span><span class="sh">"</span><span class="p">),</span> <span class="sh">"</span><span class="s">Charset.forName(</span><span class="se">\"</span><span class="s">UTF-16LE</span><span class="se">\"</span><span class="s">)</span><span class="sh">"</span><span class="p">);</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">Charset</span><span class="p">.</span><span class="nf">forName</span><span class="p">(</span><span class="sh">"</span><span class="s">US-ASCII</span><span class="sh">"</span><span class="p">),</span> <span class="sh">"</span><span class="s">Charset.forName(</span><span class="se">\"</span><span class="s">US-ASCII</span><span class="se">\"</span><span class="s">)</span><span class="sh">"</span><span class="p">);</span>
+        <span class="n">d</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="n">Charset</span><span class="p">.</span><span class="nf">forName</span><span class="p">(</span><span class="sh">"</span><span class="s">ISO-8859-1</span><span class="sh">"</span><span class="p">),</span> <span class="sh">"</span><span class="s">Charset.forName(</span><span class="se">\"</span><span class="s">ISO-8859-1</span><span class="se">\"</span><span class="s">)</span><span class="sh">"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Since that was a bust let’s look into <code class="language-plaintext highlighter-rouge">a2</code>. From <code class="language-plaintext highlighter-rouge">g()</code> in the <code class="language-plaintext highlighter-rouge">b3nac.injuredandroid</code> folder we find <code class="language-plaintext highlighter-rouge">f1468a</code>. Which turns out to simply be base64 decoding <code class="language-plaintext highlighter-rouge">NF9vdmVyZG9uZV9vbWVsZXRz</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">package</span> <span class="n">b3nac</span><span class="p">.</span><span class="n">injuredandroid</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="n">android.util.Base64</span><span class="p">;</span>
+
+<span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+<span class="n">public</span> <span class="k">class</span> <span class="nc">g</span> <span class="p">{</span>
+
+    <span class="o">/*</span> <span class="n">renamed</span> <span class="k">from</span><span class="p">:</span> <span class="n">a</span>  <span class="n">reason</span><span class="p">:</span> <span class="n">collision</span> <span class="k">with</span> <span class="n">root</span> <span class="n">package</span> <span class="n">name</span> <span class="o">*/</span>
+    <span class="n">private</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">f1468a</span> <span class="o">=</span> <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="sh">"</span><span class="s">NF9vdmVyZG9uZV9vbWVsZXRz</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="n">public</span> <span class="n">byte</span><span class="p">[]</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">this</span><span class="p">.</span><span class="n">f1468a</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Decoding the string will give us our key to trigger the flag.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">echo</span> <span class="sh">'</span><span class="s">NF9vdmVyZG9uZV9vbWVsZXRz</span><span class="sh">'</span> <span class="o">|</span> <span class="n">base64</span> <span class="o">--</span><span class="n">decode</span>
+<span class="mi">4</span><span class="n">_overdone_omelets</span>
+</code></pre></div></div>
+
+<h1 id="flag-five-exported-broadcast-receiver">Flag Five: Exported Broadcast Receiver</h1>
+
+<p>From the de-compiled code for <code class="language-plaintext highlighter-rouge">FlagFiveActivity</code> we can see that an intent <code class="language-plaintext highlighter-rouge">com.b3nac.injuredandroid.intent.action.CUSTOM_INTENT</code> is being created along with a listener. Additionally the receiver is created using <code class="language-plaintext highlighter-rouge">ComponentName(this, FlagFiveReceiver.class)</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">package</span> <span class="n">b3nac</span><span class="p">.</span><span class="n">injuredandroid</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="n">android.content.ComponentName</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.content.Intent</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.content.IntentFilter</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.os.Bundle</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.view.View</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.widget.Button</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">androidx.appcompat.widget.Toolbar</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">com.google.android.material.floatingactionbutton.FloatingActionButton</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">com.google.android.material.snackbar.Snackbar</span><span class="p">;</span>
+
+<span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+<span class="n">public</span> <span class="k">class</span> <span class="nc">FlagFiveActivity</span> <span class="n">extends</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span> <span class="p">{</span>
+    <span class="nb">int</span> <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">private</span> <span class="n">FlagFiveReceiver</span> <span class="n">x</span> <span class="o">=</span> <span class="n">new</span> <span class="nc">FlagFiveReceiver</span><span class="p">();</span>
+
+    <span class="n">public</span> <span class="n">void</span> <span class="nc">F</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">sendBroadcast</span><span class="p">(</span><span class="n">new</span> <span class="nc">Intent</span><span class="p">(</span><span class="sh">"</span><span class="s">com.b3nac.injuredandroid.intent.action.CUSTOM_INTENT</span><span class="sh">"</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="o">/*</span> <span class="n">synthetic</span> <span class="o">*/</span> <span class="n">void</span> <span class="nc">G</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">this</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
+        <span class="nf">if </span><span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Snackbar</span> <span class="n">X</span> <span class="o">=</span> <span class="n">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="sh">"</span><span class="s">Where is bob.</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="n">X</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="sh">"</span><span class="s">Action</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+            <span class="n">X</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+            <span class="n">this</span><span class="p">.</span><span class="n">w</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="nf">if </span><span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Snackbar</span> <span class="n">X2</span> <span class="o">=</span> <span class="n">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="sh">"</span><span class="s">Classes and imports.</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="n">X2</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="sh">"</span><span class="s">Action</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+            <span class="n">X2</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+            <span class="n">this</span><span class="p">.</span><span class="n">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="o">/*</span> <span class="n">synthetic</span> <span class="o">*/</span> <span class="n">void</span> <span class="nc">H</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nc">F</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="o">/*</span> <span class="n">JADX</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">Access</span> <span class="n">modifiers</span> <span class="n">changed</span> <span class="k">from</span><span class="p">:</span> <span class="n">protected</span> <span class="o">*/</span>
+    <span class="nd">@Override</span> <span class="o">//</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">fragment</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">activity</span><span class="p">.</span><span class="n">ComponentActivity</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">e</span><span class="p">,</span> <span class="n">android</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">Activity</span>
+    <span class="n">public</span> <span class="n">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span> <span class="n">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="n">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_flag_five</span><span class="p">);</span>
+        <span class="nc">C</span><span class="p">((</span><span class="n">Toolbar</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">toolbar</span><span class="p">));</span>
+        <span class="p">((</span><span class="n">FloatingActionButton</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">fab</span><span class="p">)).</span><span class="nf">setOnClickListener</span><span class="p">(</span><span class="n">new</span> <span class="n">View</span><span class="p">.</span><span class="nc">OnClickListener</span><span class="p">()</span> <span class="p">{</span> <span class="o">//</span> <span class="k">from</span> <span class="n">class</span><span class="p">:</span> <span class="n">b3nac</span><span class="p">.</span><span class="n">injuredandroid</span><span class="p">.</span><span class="n">c</span>
+            <span class="nd">@Override</span> <span class="o">//</span> <span class="n">android</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">View</span><span class="p">.</span><span class="n">OnClickListener</span>
+            <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nf">onClick</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">FlagFiveActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+        <span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="p">(</span><span class="n">Button</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">button9</span><span class="p">);</span>
+        <span class="n">new</span> <span class="nc">ComponentName</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">FlagFiveReceiver</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+        <span class="nf">getPackageManager</span><span class="p">();</span>
+        <span class="n">a</span><span class="p">.</span><span class="n">m</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="nf">b</span><span class="p">(</span><span class="n">this</span><span class="p">).</span><span class="nf">c</span><span class="p">(</span><span class="n">this</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">new</span> <span class="nc">IntentFilter</span><span class="p">(</span><span class="sh">"</span><span class="s">com.b3nac.injuredandroid.intent.action.CUSTOM_INTENT</span><span class="sh">"</span><span class="p">));</span>
+        <span class="n">button</span><span class="p">.</span><span class="nf">setOnClickListener</span><span class="p">(</span><span class="n">new</span> <span class="n">View</span><span class="p">.</span><span class="nc">OnClickListener</span><span class="p">()</span> <span class="p">{</span> <span class="o">//</span> <span class="k">from</span> <span class="n">class</span><span class="p">:</span> <span class="n">b3nac</span><span class="p">.</span><span class="n">injuredandroid</span><span class="p">.</span><span class="n">b</span>
+            <span class="nd">@Override</span> <span class="o">//</span> <span class="n">android</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">View</span><span class="p">.</span><span class="n">OnClickListener</span>
+            <span class="n">public</span> <span class="n">final</span> <span class="n">void</span> <span class="nf">onClick</span><span class="p">(</span><span class="n">View</span> <span class="n">view</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">FlagFiveActivity</span><span class="p">.</span><span class="n">this</span><span class="p">.</span><span class="nc">H</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="o">/*</span> <span class="n">JADX</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">Access</span> <span class="n">modifiers</span> <span class="n">changed</span> <span class="k">from</span><span class="p">:</span> <span class="n">protected</span> <span class="o">*/</span>
+    <span class="nd">@Override</span> <span class="o">//</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">fragment</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="n">android</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">Activity</span>
+    <span class="n">public</span> <span class="n">void</span> <span class="nf">onDestroy</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">a</span><span class="p">.</span><span class="n">m</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="nf">b</span><span class="p">(</span><span class="n">this</span><span class="p">).</span><span class="nf">e</span><span class="p">(</span><span class="n">this</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+        <span class="nb">super</span><span class="p">.</span><span class="nf">onDestroy</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In <code class="language-plaintext highlighter-rouge">FlagFiveReceiver</code> we can see that if <code class="language-plaintext highlighter-rouge">i2</code> is not 0 we will go into the else portion. Once there we can see that if <code class="language-plaintext highlighter-rouge">i2</code> is equal to 2 then we will trigger the flag. <code class="language-plaintext highlighter-rouge">i2</code> is equal to <code class="language-plaintext highlighter-rouge">f1454a</code> which is equal to <code class="language-plaintext highlighter-rouge">i</code> which presumably starts at zero but is increased by 1 each time the Broadcast Receiver receives the intent.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">package</span> <span class="nx">b3nac</span><span class="p">.</span><span class="nx">injuredandroid</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">content</span><span class="p">.</span><span class="nx">BroadcastReceiver</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">content</span><span class="p">.</span><span class="nx">Context</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">content</span><span class="p">.</span><span class="nx">Intent</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">Log</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">Toast</span><span class="p">;</span>
+
+<span class="cm">/* loaded from: classes.dex */</span>
+<span class="kr">public</span> <span class="nx">final</span> <span class="kd">class</span> <span class="nc">FlagFiveReceiver</span> <span class="kd">extends</span> <span class="nc">BroadcastReceiver</span> <span class="p">{</span>
+
+    <span class="cm">/* renamed from: a  reason: collision with root package name */</span>
+    <span class="kr">private</span> <span class="kd">static</span> <span class="nx">int</span> <span class="nx">f1454a</span><span class="p">;</span>
+
+    <span class="p">@</span><span class="nd">Override</span> <span class="c1">// android.content.BroadcastReceiver</span>
+    <span class="kr">public</span> <span class="k">void</span> <span class="nf">onReceive</span><span class="p">(</span><span class="nx">Context</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">Intent</span> <span class="nx">intent</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">String</span> <span class="nx">str</span><span class="p">;</span>
+        <span class="nx">int</span> <span class="nx">i</span><span class="p">;</span>
+        <span class="nb">String</span> <span class="nx">e</span><span class="p">;</span>
+        <span class="nb">String</span> <span class="nx">e2</span><span class="p">;</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">e</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="dl">"</span><span class="s2">context</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">e</span><span class="p">(</span><span class="nx">intent</span><span class="p">,</span> <span class="dl">"</span><span class="s2">intent</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">j</span><span class="p">.</span><span class="nx">j</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="nx">context</span><span class="p">);</span>
+        <span class="nx">int</span> <span class="nx">i2</span> <span class="o">=</span> <span class="nx">f1454a</span><span class="p">;</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">i2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">StringBuilder</span> <span class="nx">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="p">();</span>
+            <span class="nx">e</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">w</span><span class="p">.</span><span class="nx">h</span><span class="p">.</span><span class="nf">e</span><span class="p">(</span><span class="dl">"</span><span class="se">\n</span><span class="s2">    Action: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">intent</span><span class="p">.</span><span class="nf">getAction</span><span class="p">()</span> <span class="o">+</span> <span class="dl">"</span><span class="se">\n\n</span><span class="s2">    </span><span class="dl">"</span><span class="p">);</span>
+            <span class="nx">sb</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+            <span class="nx">e2</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">w</span><span class="p">.</span><span class="nx">h</span><span class="p">.</span><span class="nf">e</span><span class="p">(</span><span class="dl">"</span><span class="se">\n</span><span class="s2">    URI: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">intent</span><span class="p">.</span><span class="nf">toUri</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="dl">"</span><span class="se">\n\n</span><span class="s2">    </span><span class="dl">"</span><span class="p">);</span>
+            <span class="nx">sb</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nx">e2</span><span class="p">);</span>
+            <span class="nx">str</span> <span class="o">=</span> <span class="nx">sb</span><span class="p">.</span><span class="nf">toString</span><span class="p">();</span>
+            <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="dl">"</span><span class="s2">sb.toString()</span><span class="dl">"</span><span class="p">);</span>
+            <span class="nx">Log</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="dl">"</span><span class="s2">DUDE!:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">str</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">str</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Keep trying!</span><span class="dl">"</span><span class="p">;</span>
+            <span class="k">if </span><span class="p">(</span><span class="nx">i2</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if </span><span class="p">(</span><span class="nx">i2</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">Toast</span><span class="p">.</span><span class="nf">makeText</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="dl">"</span><span class="s2">Keep trying!</span><span class="dl">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nf">show</span><span class="p">();</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="nb">String</span> <span class="nx">str2</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">You are a winner </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">k</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="dl">"</span><span class="s2">Zkdlt0WwtLQ=</span><span class="dl">"</span><span class="p">);</span>
+                <span class="k">new</span> <span class="nc">FlagsOverview</span><span class="p">().</span><span class="nc">H</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+                <span class="k">new</span> <span class="nf">j</span><span class="p">().</span><span class="nf">b</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="dl">"</span><span class="s2">flagFiveButtonColor</span><span class="dl">"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+                <span class="nx">Toast</span><span class="p">.</span><span class="nf">makeText</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">str2</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nf">show</span><span class="p">();</span>
+                <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+                <span class="nx">f1454a</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nx">Toast</span><span class="p">.</span><span class="nf">makeText</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">str</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nf">show</span><span class="p">();</span>
+        <span class="nx">i</span> <span class="o">=</span> <span class="nx">f1454a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="nx">f1454a</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Sending a broadcast twice we can trigger the flag.</p>
+
+<p><code class="language-plaintext highlighter-rouge">adb shell am broadcast -a com.b3nac.injuredandroid.intent.action.CUSTOM_INTENT</code></p>
+
+<p><img src="Injured%20Android%20ddd06fb207354b8abf489a6da38e5875/flag5.png" alt="flag5.png" /></p>
+
+<h1 id="flag-six-login3">Flag Six: Login3</h1>
+
+<p><code class="language-plaintext highlighter-rouge">FlagSixLoginActivity</code> is another login-style activity. Again in <code class="language-plaintext highlighter-rouge">submitFlag()</code> our user supplied data is being compared to another object, this time it is being compared to <code class="language-plaintext highlighter-rouge">k.a("k3FElEG9lnoWbOateGhj5pX6QsXRNJKh///8Jxi8KXW7iDpk2xRxhQ==")</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">package</span> <span class="nx">b3nac</span><span class="p">.</span><span class="nx">injuredandroid</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">content</span><span class="p">.</span><span class="nx">Intent</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">os</span><span class="p">.</span><span class="nx">Bundle</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">View</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">android</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">EditText</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">androidx</span><span class="p">.</span><span class="nx">appcompat</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">Toolbar</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">android</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">floatingactionbutton</span><span class="p">.</span><span class="nx">FloatingActionButton</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">android</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">snackbar</span><span class="p">.</span><span class="nx">Snackbar</span><span class="p">;</span>
+
+<span class="cm">/* loaded from: classes.dex */</span>
+<span class="kr">public</span> <span class="nx">final</span> <span class="kd">class</span> <span class="nc">FlagSixLoginActivity</span> <span class="kd">extends</span> <span class="nc">androidx</span><span class="p">.</span><span class="nx">appcompat</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">c</span> <span class="p">{</span>
+    <span class="kr">private</span> <span class="nx">int</span> <span class="nx">w</span><span class="p">;</span>
+
+    <span class="cm">/* loaded from: classes.dex */</span>
+    <span class="kd">static</span> <span class="nx">final</span> <span class="kd">class</span> <span class="nc">a</span> <span class="kr">implements</span> <span class="nx">View</span><span class="p">.</span><span class="nx">OnClickListener</span> <span class="p">{</span>
+        <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="p">@</span><span class="nd">Override</span> <span class="c1">// android.view.View.OnClickListener</span>
+        <span class="kr">public</span> <span class="nx">final</span> <span class="k">void</span> <span class="nf">onClick</span><span class="p">(</span><span class="nx">View</span> <span class="nx">view</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if </span><span class="p">(</span><span class="nx">FlagSixLoginActivity</span><span class="p">.</span><span class="k">this</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">c</span><span class="p">(</span><span class="nx">view</span><span class="p">);</span>
+                <span class="nx">Snackbar</span> <span class="nx">X</span> <span class="o">=</span> <span class="nx">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="nx">view</span><span class="p">,</span> <span class="dl">"</span><span class="s2">Keys.</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="nx">X</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="dl">"</span><span class="s2">Action</span><span class="dl">"</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+                <span class="nx">X</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+                <span class="nx">FlagSixLoginActivity</span> <span class="nx">flagSixLoginActivity</span> <span class="o">=</span> <span class="nx">FlagSixLoginActivity</span><span class="p">.</span><span class="k">this</span><span class="p">;</span>
+                <span class="nx">flagSixLoginActivity</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="nx">flagSixLoginActivity</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if </span><span class="p">(</span><span class="nx">FlagSixLoginActivity</span><span class="p">.</span><span class="k">this</span><span class="p">.</span><span class="nc">F</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">c</span><span class="p">(</span><span class="nx">view</span><span class="p">);</span>
+                <span class="nx">Snackbar</span> <span class="nx">X2</span> <span class="o">=</span> <span class="nx">Snackbar</span><span class="p">.</span><span class="nc">X</span><span class="p">(</span><span class="nx">view</span><span class="p">,</span> <span class="dl">"</span><span class="s2">Classes.</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="nx">X2</span><span class="p">.</span><span class="nc">Y</span><span class="p">(</span><span class="dl">"</span><span class="s2">Action</span><span class="dl">"</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+                <span class="nx">X2</span><span class="p">.</span><span class="nc">N</span><span class="p">();</span>
+                <span class="nx">FlagSixLoginActivity</span><span class="p">.</span><span class="k">this</span><span class="p">.</span><span class="nc">G</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kr">public</span> <span class="nx">final</span> <span class="nx">int</span> <span class="nc">F</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">w</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kr">public</span> <span class="nx">final</span> <span class="k">void</span> <span class="nc">G</span><span class="p">(</span><span class="nx">int</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">w</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* JADX INFO: Access modifiers changed from: protected */</span>
+    <span class="p">@</span><span class="nd">Override</span> <span class="c1">// androidx.appcompat.app.c, androidx.fragment.app.d, androidx.activity.ComponentActivity, androidx.core.app.e, android.app.Activity</span>
+    <span class="kr">public</span> <span class="k">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="nx">Bundle</span> <span class="nx">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="nx">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">activity_flag_six_login</span><span class="p">);</span>
+        <span class="nx">j</span><span class="p">.</span><span class="nx">j</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="nc">C</span><span class="p">((</span><span class="nx">Toolbar</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">));</span>
+        <span class="p">((</span><span class="nx">FloatingActionButton</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">fab</span><span class="p">)).</span><span class="nf">setOnClickListener</span><span class="p">(</span><span class="k">new</span> <span class="nf">a</span><span class="p">());</span>
+    <span class="p">}</span>
+
+    <span class="kr">public</span> <span class="nx">final</span> <span class="k">void</span> <span class="nf">submitFlag</span><span class="p">(</span><span class="nx">View</span> <span class="nx">view</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">EditText</span> <span class="nx">editText</span> <span class="o">=</span> <span class="p">(</span><span class="nx">EditText</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="nx">R</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">editText3</span><span class="p">);</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">editText</span><span class="p">,</span> <span class="dl">"</span><span class="s2">editText3</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="nx">editText</span><span class="p">.</span><span class="nf">getText</span><span class="p">().</span><span class="nf">toString</span><span class="p">(),</span> <span class="nx">k</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="dl">"</span><span class="s2">k3FElEG9lnoWbOateGhj5pX6QsXRNJKh///8Jxi8KXW7iDpk2xRxhQ==</span><span class="dl">"</span><span class="p">)))</span> <span class="p">{</span>
+            <span class="nx">Intent</span> <span class="nx">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Intent</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">FlagOneSuccess</span><span class="p">.</span><span class="kd">class</span><span class="p">);</span>
+            <span class="nx">FlagsOverview</span><span class="p">.</span><span class="nx">G</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="k">new</span> <span class="nf">j</span><span class="p">().</span><span class="nf">b</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">"</span><span class="s2">flagSixButtonColor</span><span class="dl">"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+            <span class="nf">startActivity</span><span class="p">(</span><span class="nx">intent</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Viewing <code class="language-plaintext highlighter-rouge">k()</code> in the in the <code class="language-plaintext highlighter-rouge">b3nac.injuredandroid</code> folder.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">package</span> <span class="n">b3nac</span><span class="p">.</span><span class="n">injuredandroid</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="n">android.text.TextUtils</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">android.util.Base64</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">java.security.InvalidKeyException</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">java.security.NoSuchAlgorithmException</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">java.security.spec.InvalidKeySpecException</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">javax.crypto.BadPaddingException</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">javax.crypto.Cipher</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">javax.crypto.IllegalBlockSizeException</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">javax.crypto.NoSuchPaddingException</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">javax.crypto.SecretKey</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">javax.crypto.SecretKeyFactory</span><span class="p">;</span>
+<span class="kn">import</span> <span class="n">javax.crypto.spec.DESKeySpec</span><span class="p">;</span>
+
+<span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+<span class="n">public</span> <span class="k">class</span> <span class="nc">k</span> <span class="p">{</span>
+
+    <span class="o">/*</span> <span class="n">renamed</span> <span class="k">from</span><span class="p">:</span> <span class="n">a</span>  <span class="n">reason</span><span class="p">:</span> <span class="n">collision</span> <span class="k">with</span> <span class="n">root</span> <span class="n">package</span> <span class="n">name</span> <span class="o">*/</span>
+    <span class="n">private</span> <span class="n">static</span> <span class="n">final</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">f1472a</span> <span class="o">=</span> <span class="n">h</span><span class="p">.</span><span class="nf">b</span><span class="p">();</span>
+
+    <span class="o">/*</span> <span class="n">renamed</span> <span class="k">from</span><span class="p">:</span> <span class="n">b</span>  <span class="n">reason</span><span class="p">:</span> <span class="n">collision</span> <span class="k">with</span> <span class="n">root</span> <span class="n">package</span> <span class="n">name</span> <span class="o">*/</span>
+    <span class="n">private</span> <span class="n">static</span> <span class="n">final</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">f1473b</span> <span class="o">=</span> <span class="n">h</span><span class="p">.</span><span class="nf">a</span><span class="p">();</span>
+
+    <span class="n">public</span> <span class="n">static</span> <span class="n">String</span> <span class="nf">a</span><span class="p">(</span><span class="n">String</span> <span class="nb">str</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">if </span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="n">SecretKey</span> <span class="n">generateSecret</span> <span class="o">=</span> <span class="n">SecretKeyFactory</span><span class="p">.</span><span class="nf">getInstance</span><span class="p">(</span><span class="sh">"</span><span class="s">DES</span><span class="sh">"</span><span class="p">).</span><span class="nf">generateSecret</span><span class="p">(</span><span class="n">new</span> <span class="nc">DESKeySpec</span><span class="p">(</span><span class="n">f1472a</span><span class="p">));</span>
+                <span class="n">byte</span><span class="p">[]</span> <span class="n">decode</span> <span class="o">=</span> <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="n">Cipher</span> <span class="n">cipher</span> <span class="o">=</span> <span class="n">Cipher</span><span class="p">.</span><span class="nf">getInstance</span><span class="p">(</span><span class="sh">"</span><span class="s">DES</span><span class="sh">"</span><span class="p">);</span>
+                <span class="n">cipher</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">generateSecret</span><span class="p">);</span>
+                <span class="k">return</span> <span class="n">new</span> <span class="nc">String</span><span class="p">(</span><span class="n">cipher</span><span class="p">.</span><span class="nf">doFinal</span><span class="p">(</span><span class="n">decode</span><span class="p">));</span>
+            <span class="p">}</span> <span class="nf">catch </span><span class="p">(</span><span class="n">InvalidKeyException</span> <span class="o">|</span> <span class="n">NoSuchAlgorithmException</span> <span class="o">|</span> <span class="n">InvalidKeySpecException</span> <span class="o">|</span> <span class="n">BadPaddingException</span> <span class="o">|</span> <span class="n">IllegalBlockSizeException</span> <span class="o">|</span> <span class="n">NoSuchPaddingException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">e</span><span class="p">.</span><span class="nf">printStackTrace</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="sh">"</span><span class="s">Not a string!</span><span class="sh">"</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">static</span> <span class="n">String</span> <span class="nf">b</span><span class="p">(</span><span class="n">String</span> <span class="nb">str</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">if </span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="n">SecretKey</span> <span class="n">generateSecret</span> <span class="o">=</span> <span class="n">SecretKeyFactory</span><span class="p">.</span><span class="nf">getInstance</span><span class="p">(</span><span class="sh">"</span><span class="s">DES</span><span class="sh">"</span><span class="p">).</span><span class="nf">generateSecret</span><span class="p">(</span><span class="n">new</span> <span class="nc">DESKeySpec</span><span class="p">(</span><span class="n">f1473b</span><span class="p">));</span>
+                <span class="n">byte</span><span class="p">[]</span> <span class="n">decode</span> <span class="o">=</span> <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+                <span class="n">Cipher</span> <span class="n">cipher</span> <span class="o">=</span> <span class="n">Cipher</span><span class="p">.</span><span class="nf">getInstance</span><span class="p">(</span><span class="sh">"</span><span class="s">DES</span><span class="sh">"</span><span class="p">);</span>
+                <span class="n">cipher</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">generateSecret</span><span class="p">);</span>
+                <span class="k">return</span> <span class="n">new</span> <span class="nc">String</span><span class="p">(</span><span class="n">cipher</span><span class="p">.</span><span class="nf">doFinal</span><span class="p">(</span><span class="n">decode</span><span class="p">));</span>
+            <span class="p">}</span> <span class="nf">catch </span><span class="p">(</span><span class="n">InvalidKeyException</span> <span class="o">|</span> <span class="n">NoSuchAlgorithmException</span> <span class="o">|</span> <span class="n">InvalidKeySpecException</span> <span class="o">|</span> <span class="n">BadPaddingException</span> <span class="o">|</span> <span class="n">IllegalBlockSizeException</span> <span class="o">|</span> <span class="n">NoSuchPaddingException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">e</span><span class="p">.</span><span class="nf">printStackTrace</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="sh">"</span><span class="s">Not a string!</span><span class="sh">"</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">static</span> <span class="n">boolean</span> <span class="nf">c</span><span class="p">(</span><span class="n">String</span> <span class="nb">str</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">if </span><span class="p">(</span><span class="n">TextUtils</span><span class="p">.</span><span class="nf">isEmpty</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">false</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="k">return</span> <span class="n">true</span><span class="p">;</span>
+        <span class="p">}</span> <span class="nf">catch </span><span class="p">(</span><span class="nb">Exception</span> <span class="n">unused</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">false</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">"k3FElEG9lnoWbOateGhj5pX6QsXRNJKh///8Jxi8KXW7iDpk2xRxhQ=="</code> is being passed into <code class="language-plaintext highlighter-rouge">a()</code> as <code class="language-plaintext highlighter-rouge">str</code>. <code class="language-plaintext highlighter-rouge">str</code> is base64 decoded then passed to <code class="language-plaintext highlighter-rouge">String(cipher.doFinal(decode))</code> as <code class="language-plaintext highlighter-rouge">decode</code> where it is decrypted using a DES cipher generated using <code class="language-plaintext highlighter-rouge">DESKeySpec(f1472a)</code> from <code class="language-plaintext highlighter-rouge">SecretKeyFactory</code>.</p>
+
+<p>From Oracle’s <code class="language-plaintext highlighter-rouge">DESKeySpec</code> documentation:  “<code class="language-plaintext highlighter-rouge">DESKeySpec(byte[] key)</code> Creates a DESKeySpec object using the first 8 bytes in <code class="language-plaintext highlighter-rouge">key</code> as the key material for the DES key.”</p>
+
+<p>With that being said <code class="language-plaintext highlighter-rouge">f1472a</code> is going to be the <code class="language-plaintext highlighter-rouge">key</code> object for <code class="language-plaintext highlighter-rouge">DESKeySpec()</code>.</p>
+
+<p>We see that the key <code class="language-plaintext highlighter-rouge">f1472a</code> is equal to <code class="language-plaintext highlighter-rouge">h.b()</code> so lets track that down.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">package</span> <span class="n">b3nac</span><span class="p">.</span><span class="n">injuredandroid</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="n">android.util.Base64</span><span class="p">;</span>
+
+<span class="o">/*</span> <span class="n">loaded</span> <span class="k">from</span><span class="p">:</span> <span class="n">classes</span><span class="p">.</span><span class="n">dex</span> <span class="o">*/</span>
+<span class="n">public</span> <span class="k">class</span> <span class="nc">h</span> <span class="p">{</span>
+
+    <span class="o">/*</span> <span class="n">renamed</span> <span class="k">from</span><span class="p">:</span> <span class="n">a</span>  <span class="n">reason</span><span class="p">:</span> <span class="n">collision</span> <span class="k">with</span> <span class="n">root</span> <span class="n">package</span> <span class="n">name</span> <span class="o">*/</span>
+    <span class="n">private</span> <span class="n">static</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">f1469a</span> <span class="o">=</span> <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="sh">"</span><span class="s">Q2FwdHVyM1RoMXM=</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="o">/*</span> <span class="n">renamed</span> <span class="k">from</span><span class="p">:</span> <span class="n">b</span>  <span class="n">reason</span><span class="p">:</span> <span class="n">collision</span> <span class="k">with</span> <span class="n">root</span> <span class="n">package</span> <span class="n">name</span> <span class="o">*/</span>
+    <span class="n">private</span> <span class="n">static</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">f1470b</span> <span class="o">=</span> <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="sh">"</span><span class="s">e0NhcHR1cjNUaDFzVG9vfQ==</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="o">/*</span> <span class="n">renamed</span> <span class="k">from</span><span class="p">:</span> <span class="n">c</span>  <span class="n">reason</span><span class="p">:</span> <span class="n">collision</span> <span class="k">with</span> <span class="n">root</span> <span class="n">package</span> <span class="n">name</span> <span class="o">*/</span>
+    <span class="n">private</span> <span class="n">static</span> <span class="n">String</span> <span class="n">f1471c</span> <span class="o">=</span> <span class="sh">"</span><span class="s">9EEADi^^:?;FC652?5C@:5]7:C632D6:@]4@&gt;^DB=:E6];D@?</span><span class="sh">"</span><span class="p">;</span>
+
+    <span class="o">/*</span> <span class="n">JADX</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">Access</span> <span class="n">modifiers</span> <span class="n">changed</span> <span class="k">from</span><span class="p">:</span> <span class="n">package</span><span class="o">-</span><span class="n">private</span> <span class="o">*/</span>
+    <span class="n">public</span> <span class="n">static</span> <span class="n">byte</span><span class="p">[]</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">f1470b</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">/*</span> <span class="n">JADX</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">Access</span> <span class="n">modifiers</span> <span class="n">changed</span> <span class="k">from</span><span class="p">:</span> <span class="n">package</span><span class="o">-</span><span class="n">private</span> <span class="o">*/</span>
+    <span class="n">public</span> <span class="n">static</span> <span class="n">byte</span><span class="p">[]</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">f1469a</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">/*</span> <span class="n">JADX</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">Access</span> <span class="n">modifiers</span> <span class="n">changed</span> <span class="k">from</span><span class="p">:</span> <span class="n">package</span><span class="o">-</span><span class="n">private</span> <span class="o">*/</span>
+    <span class="n">public</span> <span class="n">static</span> <span class="n">String</span> <span class="nf">c</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">f1471c</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">b()</code> is returning <code class="language-plaintext highlighter-rouge">f1469a</code> which is simply base64 decoding <code class="language-plaintext highlighter-rouge">"Q2FwdHVyM1RoMXM="</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">echo</span> <span class="sh">"</span><span class="s">Q2FwdHVyM1RoMXM=</span><span class="sh">"</span> <span class="o">|</span> <span class="n">base64</span> <span class="o">--</span><span class="n">decode</span>
+<span class="n">Captur3Th1s</span>
+</code></pre></div></div>
+
+<p>Now that we have the <code class="language-plaintext highlighter-rouge">DESKeySpec()</code> key we can reverse the encryption process.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">base64</span>
+
+<span class="kn">from</span> <span class="n">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">DES</span>
+
+<span class="n">key</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Captur3Th1s</span><span class="sh">"</span>
+<span class="n">encodedString</span> <span class="o">=</span> <span class="sh">"</span><span class="s">k3FElEG9lnoWbOateGhj5pX6QsXRNJKh///8Jxi8KXW7iDpk2xRxhQ==</span><span class="sh">"</span>
+
+<span class="n">keyByte</span> <span class="o">=</span> <span class="n">key</span><span class="p">[:</span><span class="mi">8</span><span class="p">].</span><span class="nf">encode</span><span class="p">(</span><span class="sh">'</span><span class="s">utf-8</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">stringByte</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="nf">b64decode</span><span class="p">(</span><span class="n">encodedString</span><span class="p">)</span>
+<span class="n">desReverse</span> <span class="o">=</span> <span class="n">DES</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">keyByte</span><span class="p">,</span> <span class="n">DES</span><span class="p">.</span><span class="n">MODE_ECB</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">desReverse</span><span class="p">.</span><span class="nf">decrypt</span><span class="p">(</span><span class="n">stringByte</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>We will then receive <code class="language-plaintext highlighter-rouge">b"{This_Isn't_Where_I_Parked_My_Car}\x06\x06\x06\x06\x06\x06"</code>.</p>
+
+<p>Ignoring the trailing bytes we have our answer.</p>
+
+<h1 id="flag-seven-sqlite">Flag Seven: SQLite</h1>
+
+<p><code class="language-plaintext highlighter-rouge">FlagSevenSqliteActivity</code></p>
+
+<p>Once we open the activity a SQLite database named <code class="language-plaintext highlighter-rouge">Thisisatest</code> is created. <code class="language-plaintext highlighter-rouge">contentValues.put(”title”, )</code> &amp; <code class="language-plaintext highlighter-rouge">contentValues.put(”subtitle”, )</code> are being used to provide the data to be inserted into the database.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span> <span class="o">//</span> <span class="n">androidx</span><span class="p">.</span><span class="n">appcompat</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">fragment</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">activity</span><span class="p">.</span><span class="n">ComponentActivity</span><span class="p">,</span> <span class="n">androidx</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">e</span><span class="p">,</span> <span class="n">android</span><span class="p">.</span><span class="n">app</span><span class="p">.</span><span class="n">Activity</span>
+    <span class="n">public</span> <span class="n">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span> <span class="n">bundle</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">super</span><span class="p">.</span><span class="nf">onCreate</span><span class="p">(</span><span class="n">bundle</span><span class="p">);</span>
+        <span class="nf">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_flag_seven_sqlite</span><span class="p">);</span>
+        <span class="nc">C</span><span class="p">((</span><span class="n">Toolbar</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">toolbar</span><span class="p">));</span>
+        <span class="n">j</span><span class="p">.</span><span class="n">j</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>
+        <span class="nc">H</span><span class="p">();</span>
+        <span class="p">((</span><span class="n">FloatingActionButton</span><span class="p">)</span> <span class="nf">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">fab</span><span class="p">)).</span><span class="nf">setOnClickListener</span><span class="p">(</span><span class="n">new</span> <span class="nf">a</span><span class="p">());</span>
+        <span class="n">SQLiteDatabase</span> <span class="n">writableDatabase</span> <span class="o">=</span> <span class="n">this</span><span class="p">.</span><span class="n">x</span><span class="p">.</span><span class="nf">getWritableDatabase</span><span class="p">();</span>
+        <span class="n">ContentValues</span> <span class="n">contentValues</span> <span class="o">=</span> <span class="n">new</span> <span class="nc">ContentValues</span><span class="p">();</span>
+        <span class="n">contentValues</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="sh">"</span><span class="s">title</span><span class="sh">"</span><span class="p">,</span> <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="sh">"</span><span class="s">VGhlIGZsYWcgaGFzaCE=</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">contentValues</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="sh">"</span><span class="s">subtitle</span><span class="sh">"</span><span class="p">,</span> <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="sh">"</span><span class="s">MmFiOTYzOTBjN2RiZTM0MzlkZTc0ZDBjOWIwYjE3Njc=</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">writableDatabase</span><span class="p">.</span><span class="nf">insert</span><span class="p">(</span><span class="sh">"</span><span class="s">Thisisatest</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">,</span> <span class="n">contentValues</span><span class="p">);</span>
+        <span class="n">contentValues</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="sh">"</span><span class="s">title</span><span class="sh">"</span><span class="p">,</span> <span class="n">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="sh">"</span><span class="s">VGhlIGZsYWcgaXMgYWxzbyBhIHBhc3N3b3JkIQ==</span><span class="sh">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">contentValues</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="sh">"</span><span class="s">subtitle</span><span class="sh">"</span><span class="p">,</span> <span class="n">h</span><span class="p">.</span><span class="nf">c</span><span class="p">());</span>
+        <span class="n">writableDatabase</span><span class="p">.</span><span class="nf">insert</span><span class="p">(</span><span class="sh">"</span><span class="s">Thisisatest</span><span class="sh">"</span><span class="p">,</span> <span class="n">null</span><span class="p">,</span> <span class="n">contentValues</span><span class="p">);</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>For the first row in the database both the <code class="language-plaintext highlighter-rouge">“title”</code> and <code class="language-plaintext highlighter-rouge">“subtitle”</code> are base64 decoded version of their associated hard-coded string.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">contentValues</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="dl">"</span><span class="s2">title</span><span class="dl">"</span><span class="p">,</span> <span class="nx">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="dl">"</span><span class="s2">VGhlIGZsYWcgaGFzaCE=</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+<span class="nx">contentValues</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="dl">"</span><span class="s2">subtitle</span><span class="dl">"</span><span class="p">,</span> <span class="nx">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="dl">"</span><span class="s2">MmFiOTYzOTBjN2RiZTM0MzlkZTc0ZDBjOWIwYjE3Njc=</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+<span class="nx">writableDatabase</span><span class="p">.</span><span class="nf">insert</span><span class="p">(</span><span class="dl">"</span><span class="s2">Thisisatest</span><span class="dl">"</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">contentValues</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Base64 decoding both we receive the following:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">title</span><span class="p">:</span> <span class="nx">echo</span> <span class="dl">"</span><span class="s2">VGhlIGZsYWcgaGFzaCE=</span><span class="dl">"</span> <span class="o">|</span> <span class="nx">base64</span> <span class="o">--</span><span class="nx">decode</span>
+<span class="nx">The</span> <span class="nx">flag</span> <span class="nx">hash</span><span class="o">!</span>
+
+<span class="nx">subtitle</span><span class="p">:</span> <span class="nx">echo</span> <span class="dl">"</span><span class="s2">MmFiOTYzOTBjN2RiZTM0MzlkZTc0ZDBjOWIwYjE3Njc=</span><span class="dl">"</span> <span class="o">|</span> <span class="nx">base64</span> <span class="o">--</span><span class="nx">decode</span>
+<span class="mi">2</span><span class="nx">ab96390c7dbe3439de74d0c9b0b1767</span>
+</code></pre></div></div>
+
+<p>However for the second row the <code class="language-plaintext highlighter-rouge">“title”</code> is a base64 decoded version of its associated string but the <code class="language-plaintext highlighter-rouge">“subtitle”</code> is <code class="language-plaintext highlighter-rouge">h.c()</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">contentValues</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="dl">"</span><span class="s2">title</span><span class="dl">"</span><span class="p">,</span> <span class="nx">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="dl">"</span><span class="s2">VGhlIGZsYWcgaXMgYWxzbyBhIHBhc3N3b3JkIQ==</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+<span class="nx">contentValues</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="dl">"</span><span class="s2">subtitle</span><span class="dl">"</span><span class="p">,</span> <span class="nx">h</span><span class="p">.</span><span class="nf">c</span><span class="p">());</span>
+<span class="nx">writableDatabase</span><span class="p">.</span><span class="nf">insert</span><span class="p">(</span><span class="dl">"</span><span class="s2">Thisisatest</span><span class="dl">"</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">contentValues</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Base64 decoding the <code class="language-plaintext highlighter-rouge">“title”</code> we receive the following:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">title</span><span class="p">:</span> <span class="nx">echo</span> <span class="dl">"</span><span class="s2">VGhlIGZsYWcgaXMgYWxzbyBhIHBhc3N3b3JkIQ==</span><span class="dl">"</span> <span class="o">|</span> <span class="nx">base64</span> <span class="o">--</span><span class="nx">decode</span>
+<span class="nx">The</span> <span class="nx">flag</span> <span class="nx">is</span> <span class="nx">also</span> <span class="nx">a</span> <span class="nx">password</span><span class="o">!</span>
+</code></pre></div></div>
+
+<p>Wanting to know what is being supplied from <code class="language-plaintext highlighter-rouge">h.c()</code> I decided to use use sqlite3 to interact with the database.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">emu64xa</span><span class="p">:</span><span class="o">/</span><span class="nx">data</span><span class="o">/</span><span class="nx">data</span><span class="o">/</span><span class="nx">b3nac</span><span class="p">.</span><span class="nx">injuredandroid</span><span class="o">/</span><span class="nx">databases</span> <span class="err">#</span> <span class="nx">sqlite3</span> <span class="nx">Thisisatest</span><span class="p">.</span><span class="nx">db</span>
+<span class="nx">SQLite</span> <span class="nx">version</span> <span class="mf">3.32</span><span class="p">.</span><span class="mi">2</span> <span class="mi">2021</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">12</span> <span class="mi">15</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">17</span>
+<span class="nx">Enter</span> <span class="dl">"</span><span class="s2">.help</span><span class="dl">"</span> <span class="k">for</span> <span class="nx">usage</span> <span class="nx">hints</span><span class="p">.</span>
+<span class="nx">sqlite</span><span class="o">&gt;</span> <span class="p">.</span><span class="nx">tables</span>
+<span class="nx">Thisisatest</span>       <span class="nx">android_metadata</span>
+<span class="nx">sqlite</span><span class="o">&gt;</span> <span class="nx">SELECT</span> <span class="o">*</span> <span class="nx">FROM</span> <span class="nx">Thisisatest</span><span class="p">;</span>
+<span class="mi">1</span><span class="o">|</span><span class="nx">The</span> <span class="nx">flag</span> <span class="nx">hash</span><span class="o">!|</span><span class="mi">2</span><span class="nx">ab96390c7dbe3439de74d0c9b0b1767</span>
+<span class="mi">2</span><span class="o">|</span><span class="nx">The</span> <span class="nx">flag</span> <span class="nx">is</span> <span class="nx">also</span> <span class="nx">a</span> <span class="nx">password</span><span class="o">!|</span><span class="mi">9</span><span class="nx">EEADi</span><span class="o">^^</span><span class="p">:?;</span><span class="nx">FC652</span><span class="p">?</span><span class="mi">5</span><span class="nx">C</span><span class="p">@:</span><span class="mi">5</span><span class="p">]</span><span class="mi">7</span><span class="p">:</span><span class="nx">C632D6</span><span class="p">:@]</span><span class="mi">4</span><span class="p">@</span><span class="o">&gt;^</span><span class="nx">DB</span><span class="o">=</span><span class="p">:</span><span class="nx">E6</span><span class="p">];</span><span class="nx">D</span><span class="p">@?</span>
+</code></pre></div></div>
+
+<p>So the string <code class="language-plaintext highlighter-rouge">2ab96390c7dbe3439de74d0c9b0b1767</code> from row 1 is a hash. Lets see if we can crack it. Using hashid we can quickly verify that it is likely to be a MD5 hash.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">hashid</span> <span class="mi">2</span><span class="nx">ab96390c7dbe3439de74d0c9b0b1767</span>
+<span class="nx">Analyzing</span> <span class="dl">'</span><span class="s1">2ab96390c7dbe3439de74d0c9b0b1767</span><span class="dl">'</span>
+<span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="nx">MD2</span> 
+<span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="nx">MD5</span> 
+<span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="nx">MD4</span>
+</code></pre></div></div>
+
+<p>Thanks to CrackStation we didn’t even need to open hashcat.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Hash</span>	                           <span class="nx">Type</span>	<span class="nx">Result</span>
+<span class="mi">2</span><span class="nx">ab96390c7dbe3439de74d0c9b0b1767</span>	<span class="nx">md5</span>	<span class="nx">hunter2</span>
+</code></pre></div></div>
+
+<p>Now onto row 2 we could look into <code class="language-plaintext highlighter-rouge">h.c()</code> but lets see if we can get an easy win first. Using ciphey we uncover the plaintext version of the string.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">docker</span> <span class="nx">run</span> <span class="o">-</span><span class="nx">it</span> <span class="o">--</span><span class="nx">rm</span> <span class="nx">remnux</span><span class="o">/</span><span class="nx">ciphey</span> <span class="dl">"</span><span class="s2">9EEADi^^:?;FC652?5C@:5]7:C632D6:@]4@&gt;^DB=:E6];D@?</span><span class="dl">"</span>
+<span class="nx">Possible</span> <span class="nx">plaintext</span><span class="p">:</span> <span class="dl">'</span><span class="s1">https://injuredandroid.firebaseio.com/sqlite.json</span><span class="dl">'</span> <span class="p">(</span><span class="nx">y</span><span class="o">/</span><span class="nx">N</span><span class="p">):</span> <span class="nx">y</span>
+<span class="err">╭───────────────────────────────────────────────────────────────────────────╮</span>
+<span class="err">│</span> <span class="nx">The</span> <span class="nx">plaintext</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">Uniform</span> <span class="nx">Resource</span> <span class="nc">Locator </span><span class="p">(</span><span class="nx">URL</span><span class="p">)</span>                         <span class="err">│</span>
+<span class="err">│</span> <span class="nx">Formats</span> <span class="nx">used</span><span class="p">:</span>                                                             <span class="err">│</span>
+<span class="err">│</span>    <span class="nx">rot47</span><span class="p">:</span>                                                                 <span class="err">│</span>
+<span class="err">│</span>     <span class="nx">Key</span><span class="p">:</span> <span class="mi">47</span><span class="nx">Plaintext</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://injuredandroid.firebaseio.com/sqlite.json</span><span class="dl">"</span> <span class="err">│</span>
+<span class="err">╰───────────────────────────────────────────────────────────────────────────╯</span>
+</code></pre></div></div>
+
+<p>Lastly, running opening the URL we can get the last part of the puzzle.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nx">curl</span> <span class="nx">https</span><span class="p">:</span><span class="c1">//injuredandroid.firebaseio.com/sqlite.json</span>
+<span class="dl">"</span><span class="s2">S3V3N_11</span><span class="dl">"</span>
+</code></pre></div></div>
+
+<h1 id="flag-eight-aws">Flag Eight: AWS</h1>
+
+<p><code class="language-plaintext highlighter-rouge">FlagEightLoginActivity</code></p>
+
+<p>On top of searching for AWS and the string names I ran trufflehog but did not find any strings that match any AWS patterns or anything similar. For sanity sake I looked at another write-up of this app which in their case they found the AWS credentials within strings.xml.</p>
+
+<p>Looking into strings.xml we find two spaces for AWS credentials to be in but no info is shown for these lines. For whatever reason those credentials are no longer in this app.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">&lt;</span><span class="nt">string</span> <span class="na">name</span><span class="p">=</span><span class="s">"AWS_ID"</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">string</span> <span class="na">name</span><span class="p">=</span><span class="s">"AWS_SECRET"</span> <span class="p">/&gt;</span>
+</code></pre></div></div>
+
+<h1 id="flag-nine-firebase">Flag Nine: Firebase</h1>
+
+<p><code class="language-plaintext highlighter-rouge">FlagNineFirebaseActivity</code></p>
+
+<p>This activity gives a rather helpful hint, “Use the .json trick with database url”. A quick Google search we can find an article provided in hacktricks. <a href="https://cloud.hacktricks.xyz/pentesting-cloud/gcp-security/gcp-services/gcp-databases-enum/gcp-firebase-enum">https://cloud.hacktricks.xyz/pentesting-cloud/gcp-security/gcp-services/gcp-databases-enum/gcp-firebase-enum</a></p>
+
+<p>First up we will need to find the Firebase URL e can go ahead and grep for Firebase or alternatively if we provide the APK to MobSF the Firebase URL will automatically be located for us. Either way the Firebase URL is located in the strings.xml file.</p>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;string name="firebase_database_url"&gt;https://injuredandroid.firebaseio.com&lt;/string&gt;</code></p>
+
+<p>Now that we have the URL lets see what we need to trigger the flag. <code class="language-plaintext highlighter-rouge">b()</code> shows us that if <code class="language-plaintext highlighter-rouge">this.f1456b</code>, which is our user supplied string, is equal to the string from <code class="language-plaintext highlighter-rouge">aVar.c()</code> then the flag will be triggered. Since <code class="language-plaintext highlighter-rouge">aVar</code> is from the Firebase database lets look into the database itself.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">public</span> <span class="k">void</span> <span class="nf">b</span><span class="p">(</span><span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">firebase</span><span class="p">.</span><span class="nx">database</span><span class="p">.</span><span class="nx">a</span> <span class="nx">aVar</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">e</span><span class="p">(</span><span class="nx">aVar</span><span class="p">,</span> <span class="dl">"</span><span class="s2">dataSnapshot</span><span class="dl">"</span><span class="p">);</span>
+            <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">a</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">f1456b</span><span class="p">,</span> <span class="p">(</span><span class="nb">String</span><span class="p">)</span> <span class="nx">aVar</span><span class="p">.</span><span class="nf">c</span><span class="p">()))</span> <span class="p">{</span>
+                <span class="nx">Toast</span><span class="p">.</span><span class="nf">makeText</span><span class="p">(</span><span class="nx">FlagNineFirebaseActivity</span><span class="p">.</span><span class="k">this</span><span class="p">,</span> <span class="dl">"</span><span class="s2">Try again! :D</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span class="nf">show</span><span class="p">();</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="nx">FlagsOverview</span><span class="p">.</span><span class="nx">J</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">j</span> <span class="nx">jVar</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">j</span><span class="p">();</span>
+            <span class="nx">Context</span> <span class="nx">applicationContext</span> <span class="o">=</span> <span class="nx">FlagNineFirebaseActivity</span><span class="p">.</span><span class="k">this</span><span class="p">.</span><span class="nf">getApplicationContext</span><span class="p">();</span>
+            <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">applicationContext</span><span class="p">,</span> <span class="dl">"</span><span class="s2">applicationContext</span><span class="dl">"</span><span class="p">);</span>
+            <span class="nx">jVar</span><span class="p">.</span><span class="nf">b</span><span class="p">(</span><span class="nx">applicationContext</span><span class="p">,</span> <span class="dl">"</span><span class="s2">flagNineButtonColor</span><span class="dl">"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+            <span class="nx">FlagNineFirebaseActivity</span><span class="p">.</span><span class="k">this</span><span class="p">.</span><span class="nc">G</span><span class="p">();</span>
+        <span class="p">}</span>
+</code></pre></div></div>
+
+<p>Looking into <code class="language-plaintext highlighter-rouge">FlagNineFirebaseActivity</code> the string <code class="language-plaintext highlighter-rouge">"ZmxhZ3Mv"</code> is being decoded and used as the reference directory.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">public</span> <span class="nc">FlagNineFirebaseActivity</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">byte</span><span class="p">[]</span> <span class="nx">decode</span> <span class="o">=</span> <span class="nx">Base64</span><span class="p">.</span><span class="nf">decode</span><span class="p">(</span><span class="dl">"</span><span class="s2">ZmxhZ3Mv</span><span class="dl">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nx">decode</span><span class="p">;</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">decode</span><span class="p">,</span> <span class="dl">"</span><span class="s2">decodedDirectory</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">Charset</span> <span class="nx">charset</span> <span class="o">=</span> <span class="nx">StandardCharsets</span><span class="p">.</span><span class="nx">UTF_8</span><span class="p">;</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">charset</span><span class="p">,</span> <span class="dl">"</span><span class="s2">StandardCharsets.UTF_8</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">z</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="p">(</span><span class="nx">decode</span><span class="p">,</span> <span class="nx">charset</span><span class="p">);</span>
+        <span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">firebase</span><span class="p">.</span><span class="nx">database</span><span class="p">.</span><span class="nx">f</span> <span class="nx">b2</span> <span class="o">=</span> <span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">firebase</span><span class="p">.</span><span class="nx">database</span><span class="p">.</span><span class="nx">f</span><span class="p">.</span><span class="nf">b</span><span class="p">();</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">b2</span><span class="p">,</span> <span class="dl">"</span><span class="s2">FirebaseDatabase.getInstance()</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">firebase</span><span class="p">.</span><span class="nx">database</span><span class="p">.</span><span class="nx">d</span> <span class="nx">d2</span> <span class="o">=</span> <span class="nx">b2</span><span class="p">.</span><span class="nf">d</span><span class="p">();</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">d2</span><span class="p">,</span> <span class="dl">"</span><span class="s2">FirebaseDatabase.getInstance().reference</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">A</span> <span class="o">=</span> <span class="nx">d2</span><span class="p">;</span>
+        <span class="nx">com</span><span class="p">.</span><span class="nx">google</span><span class="p">.</span><span class="nx">firebase</span><span class="p">.</span><span class="nx">database</span><span class="p">.</span><span class="nx">d</span> <span class="nx">h</span> <span class="o">=</span> <span class="nx">d2</span><span class="p">.</span><span class="nf">h</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">z</span><span class="p">);</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nx">d</span><span class="p">.</span><span class="nx">g</span><span class="p">.</span><span class="nf">d</span><span class="p">(</span><span class="nx">h</span><span class="p">,</span> <span class="dl">"</span><span class="s2">database.child(refDirectory)</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">B</span> <span class="o">=</span> <span class="nx">h</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>Base64 decode the string and append to the Firebase URL.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">echo</span> <span class="dl">"</span><span class="s2">ZmxhZ3Mv</span><span class="dl">"</span> <span class="o">|</span> <span class="nx">base64</span> <span class="o">--</span><span class="nx">decode</span>
+<span class="nx">flags</span><span class="o">/</span>
+
+<span class="nx">curl</span> <span class="nx">https</span><span class="p">:</span><span class="c1">//injuredandroid.firebaseio.com/flags/.json</span>
+<span class="dl">"</span><span class="s2">[nine!_flag]</span><span class="dl">"</span>
+</code></pre></div></div>
+
+<p>Looking into <code class="language-plaintext highlighter-rouge">submitFlag()</code> we can see that our string is being base64 decoded so we will need to bse64 encode our string and then supply the answer.</p>
+
+</div>
+<div class="tags-container">
+	
+</div>
+<div class="navigation">
+	 
+	<a class="next" href="/overflow-challenge-1">Overflow challenge #1 ></a>
+
+</div>
+
+	<section class="comment-area w-100">
+		<div class="comment-wrapper">
+			<div id="disqus_thread" class="article-comments"></div>
+			<script>
+			(function() {
+			var d = document, s = d.createElement('script');
+			s.src = '//XXX.disqus.com/embed.js';
+			s.setAttribute('data-timestamp', +new Date());
+			(d.head || d.body).appendChild(s);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+	</section>
+
+	<div class="footer">
+		<span>Made with <font color="red">♥</font> on Earth, a minimalist Jekyll Theme by <a href="https://hakan.io"><b>Hakan</b></a></span>
+	</div>
+</div>
+	<script src="assets/js/ephesus.js"></script>
+	<script type="text/javascript">
+		if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+			document.documentElement.setAttribute('data-theme', 'dark');
+			document.getElementById('mode-switcher').classList.add('active');
+		}
+	</script>
+
+	
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXX-00"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-XXXXXXXX-00');
+    </script>
+	
+</body>
+</html>

