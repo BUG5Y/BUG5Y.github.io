@@ -69,7 +69,7 @@ public final class DisplayPostXSS extends androidx.appcompat.app.c {
 
 `<h1>XSS <script>alert(1)</script>!</h1>`
 
-![xss2.png](Injured%20Android%20ddd06fb207354b8abf489a6da38e5875/xss2.png)
+![xss2.png](assets/images/xss2.png)
 
 # Flag One: Login
 
@@ -224,7 +224,7 @@ public final class b25lActivity extends androidx.appcompat.app.c {
 
 To call the activity: `adb shell am start -n b3nac.injuredandroid/b3nac.injuredandroid.b25lActivity`
 
-![flag2.png](Injured%20Android%20ddd06fb207354b8abf489a6da38e5875/flag2.png)
+![flag2.png](assets/images/flag2.png)
 
 # Flag Three: Resources
 
@@ -571,7 +571,7 @@ Sending a broadcast twice we can trigger the flag.
 
  `adb shell am broadcast -a com.b3nac.injuredandroid.intent.action.CUSTOM_INTENT`
 
-![flag5.png](Injured%20Android%20ddd06fb207354b8abf489a6da38e5875/flag5.png)
+![flag5.png](assets/images/flag5.png)
 
 # Flag Six: Login3
 

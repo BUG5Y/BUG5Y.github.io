@@ -1,0 +1,3 @@
+While pursuing the OSCP 2023 version, I created a reference sheet that I nicknamed the 'OSCP Codex.' This reference sheet encompasses the commands and tricks I utilized during both the OSCP exam and the Proving Ground labs. I hope you find it helpful!
+
+Due to the numerous pages, I'm unable to upload them here. However, you can access the OSCP Codex on the Gitbook site using the following link: [OSCP Codex](https://oscp-codex.gitbook.io/oscp-codex/)

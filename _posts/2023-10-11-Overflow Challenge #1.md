@@ -89,11 +89,11 @@ Thanks to Ghidra we can view the assembly instructions of the function. This sho
 1. Offset=0x43−0x18
 2. Offset=0x2B
 
-![pwn1.png](Overflow%20Challenge%20#1%200dcf7e07e2974561ae2c6c519db471de/pwn1.png)
+![pwn1.png](assets/images/pwn1.png)
 
 Viewing the assembly for `if (local_18 == -0x215eef38)` we see that local_18 is being compared to `0xdea110c8`.
 
-![pwn2.png](Overflow%20Challenge%20#1%200dcf7e07e2974561ae2c6c519db471de/pwn2.png)
+![pwn2.png](assets/images/pwn2.png)
 
 Armed with this knowledge we know we need to overwrite `0x2B` (43 bytes) prior to overwriting local_18 with the value that we want it to be, in this case `0xdea110c8`.
 

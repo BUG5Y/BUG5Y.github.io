@@ -4,38 +4,38 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title>Overflow challenge #1 - Ephesus - Minimalist Jekyll Theme</title>
-		<meta name="description" content="Ephesus - Minimalist Jekyll Theme">
+		<title>Overflow challenge #1 - ßUG5Y - Writeups</title>
+		<meta name="description" content="ßUG5Y - Writeups">
 		<meta name="keywords" content="">
 		<base href="http://localhost:4000" />
 		
-    	<meta content="2023-11-10T00:00:00-05:00" property="article:published_time">
+    	<meta content="2023-10-11T00:00:00-05:00" property="article:published_time">
     	<meta content="http://localhost:4000/about/" property="article:author">
   		
-		<meta property="og:site_name" content="Ephesus - Minimalist Jekyll Theme">
+		<meta property="og:site_name" content="ßUG5Y - Writeups">
 		<meta property="og:type" content="article" />
 		<meta property="og:url" content="http://localhost:4000/overflow-challenge-1"/>
-		<meta property="og:title" content="Overflow challenge #1 - Ephesus - Minimalist Jekyll Theme" />
-		<meta property="og:description" content="Ephesus - Minimalist Jekyll Theme" />
+		<meta property="og:title" content="Overflow challenge #1 - ßUG5Y - Writeups" />
+		<meta property="og:description" content="ßUG5Y - Writeups" />
 		<meta property="og:image" content="http://localhost:4000/assets/images/favicon.png"/>
 		<meta name="twitter:card" content="summary"/>
-		<meta property="twitter:title" content="Overflow challenge #1 - Ephesus - Minimalist Jekyll Theme" />
-		<meta property="twitter:description" content="Ephesus - Minimalist Jekyll Theme" />
+		<meta property="twitter:title" content="Overflow challenge #1 - ßUG5Y - Writeups" />
+		<meta property="twitter:description" content="ßUG5Y - Writeups" />
 		<meta property="twitter:image" content="http://localhost:4000/assets/images/favicon.png" />
 		<link rel="stylesheet" href="assets/css/highlight.css">
 		<link rel="stylesheet" href="assets/css/style.css">
 		<link rel="shortcut icon" href="assets/images/favicon.png" />
-		<link rel="alternate" type="application/atom+xml" title="Ephesus - Minimalist Jekyll Theme" href="http://localhost:4000/atom.xml">
-		<link rel="alternate" type="application/json" title="Ephesus - Minimalist Jekyll Theme" href="http://localhost:4000/feed.json" />
+		<link rel="alternate" type="application/atom+xml" title="ßUG5Y - Writeups" href="http://localhost:4000/atom.xml">
+		<link rel="alternate" type="application/json" title="ßUG5Y - Writeups" href="http://localhost:4000/feed.json" />
 		<link rel="sitemap" type="application/xml" title="sitemap" href="http://localhost:4000/sitemap.xml" />
 		<meta name="google-site-verification" content="XXX" />
 	</head>
 <body>
 <div class="container">
 	<div class="profile">
-		<a href="http://localhost:4000"><img src="assets/images/profile.jpg" class="profile-image"></a>
+		<a href="http://localhost:4000"><img src="assets/images/hackalotl.png" class="profile-image"></a>
 		<div class="profile-about">
-			<h2 style="margin-bottom: 0; font-weight: 700;">Zachary Reed</h2>
+			<h2 style="margin-bottom: 0; font-weight: 700;">ßUG5Y - Writeups</h2>
 			
 			
 			
@@ -44,11 +44,11 @@
 				<a href="https://github.com/BUG5Y" target="_blank"><img src="assets/images/icon/github.svg" class="social-icon"></a>
 			
 			
-				<a href="https://linkedin.com/in/hakantorun" target="_blank"><img src="assets/images/icon/linkedin.svg" class="social-icon"></a>
+				<a href="https://linkedin.com/in/zachary-reed-0035b21a6" target="_blank"><img src="assets/images/icon/linkedin.svg" class="social-icon"></a>
 			
 			<a href="about"><img src="assets/images/icon/me.svg" class="social-icon"></a>
 			<br>
-			Fill <br> Fill <br> OSCP ~ eJPT ~ Security+ /#linux
+			
 			<br>
 			<div class="mode" id="mode-switcher" onclick="toggleNightMode();">
 				<span></span>
@@ -57,7 +57,7 @@
 	</div>
 	
 <div class="post-header">
-	<div class="post-date">10.11.2023</div>
+	<div class="post-date">11.10.2023</div>
 	<div class="post-share">
 		Share:&nbsp; 
 		<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Overflow Challenge #1" target="_blank"><img src="assets/images/icon/facebook.svg" class="social-icon"></a>
@@ -158,11 +158,11 @@
   <li>Offset=0x2B</li>
 </ol>
 
-<p><img src="Overflow%20Challenge%20#1%200dcf7e07e2974561ae2c6c519db471de/pwn1.png" alt="pwn1.png" /></p>
+<p><img src="assets/images/pwn1.png" alt="pwn1.png" /></p>
 
 <p>Viewing the assembly for <code class="language-plaintext highlighter-rouge">if (local_18 == -0x215eef38)</code> we see that local_18 is being compared to <code class="language-plaintext highlighter-rouge">0xdea110c8</code>.</p>
 
-<p><img src="Overflow%20Challenge%20#1%200dcf7e07e2974561ae2c6c519db471de/pwn2.png" alt="pwn2.png" /></p>
+<p><img src="assets/images/pwn2.png" alt="pwn2.png" /></p>
 
 <p>Armed with this knowledge we know we need to overwrite <code class="language-plaintext highlighter-rouge">0x2B</code> (43 bytes) prior to overwriting local_18 with the value that we want it to be, in this case <code class="language-plaintext highlighter-rouge">0xdea110c8</code>.</p>
 
@@ -220,8 +220,10 @@
 </div>
 <div class="navigation">
 	
-		<a class="prev" href="/injured-android">< Injured android</a>
+		<a class="prev" href="/oscp-cheat-sheet">< Oscp cheat Sheet</a>
 	 
+	<a class="next" href="/injured-android">Injured android ></a>
+
 </div>
 
 	<section class="comment-area w-100">
